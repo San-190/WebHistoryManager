@@ -20,3 +20,7 @@ void Sitio::setTitulo(const std::string& t) { titulo = t; }
 void Sitio::setBookmark(bool bm) { bookmark = bm; }
 
 void Sitio::setTag(const std::string& tg) { tag = tg; }
+
+bool Sitio::operator<(const Sitio& sitio) const{
+    return url < sitio.url;
+}

@@ -1,0 +1,100 @@
+https://www.google.com,Google,true,search
+https://www.facebook.com,Facebook,false,social
+https://www.amazon.com,Amazon,true,e-commerce
+https://www.youtube.com,YouTube,true,video
+https://www.wikipedia.org,Wikipedia,true,education
+https://www.cnn.com,CNN,false,news
+https://www.twitter.com,Twitter,true,social
+https://www.reddit.com,Reddit,true,social
+https://www.netflix.com,Netflix,false,entertainment
+https://www.github.com,GitHub,true,development
+https://www.medium.com,Medium,false,blogging
+https://www.bbc.com,BBC,false,news
+https://www.nytimes.com,New York Times,true,news
+https://www.apple.com,Apple,false,tech
+https://www.microsoft.com,Microsoft,true,tech
+https://www.mozilla.org,Mozilla,false,tech
+https://www.stackoverflow.com,Stack Overflow,true,development
+https://www.quora.com,Quora,false,education
+https://www.ted.com,TED,true,education
+https://www.khanacademy.org,Khan Academy,true,education
+https://www.spotify.com,Spotify,false,music
+https://www.instagram.com,Instagram,true,social
+https://www.dropbox.com,Dropbox,false,cloud
+https://www.pinterest.com,Pinterest,true,social
+https://www.tumblr.com,Tumblr,false,blogging
+https://www.linkedin.com,LinkedIn,true,professional
+https://www.salesforce.com,Salesforce,false,crm
+https://www.airbnb.com,Airbnb,true,travel
+https://www.udemy.com,Udemy,true,education
+https://www.coursera.org,Coursera,true,education
+https://www.twitch.tv,Twitch,false,video
+https://www.soundcloud.com,SoundCloud,true,music
+https://www.paypal.com,PayPal,false,finance
+https://www.uber.com,Uber,false,transport
+https://www.skype.com,Skype,true,communication
+https://www.slack.com,Slack,true,communication
+https://www.zoom.us,Zoom,false,communication
+https://www.trello.com,Trello,true,productivity
+https://www.nytimes.com,New York Times,true,news
+https://www.forbes.com,Forbes,true,news
+https://www.theguardian.com,The Guardian,false,news
+https://www.nationalgeographic.com,National Geographic,true,education
+https://www.washingtonpost.com,Washington Post,false,news
+https://www.economist.com,The Economist,true,news
+https://www.imdb.com,IMDb,true,entertainment
+https://www.rottentomatoes.com,Rotten Tomatoes,false,entertainment
+https://www.buzzfeed.com,BuzzFeed,false,entertainment
+https://www.wikipedia.org,Wikipedia,true,education
+https://www.ebay.com,eBay,false,e-commerce
+https://www.etsy.com,Etsy,true,e-commerce
+https://www.adobe.com,Adobe,false,tech
+https://www.canva.com,Canva,true,design
+https://www.grammarly.com,Grammarly,true,productivity
+https://www.aliExpress.com,AliExpress,false,e-commerce
+https://www.heroku.com,Heroku,true,development
+https://www.digitalocean.com,DigitalOcean,true,cloud
+https://www.linode.com,Linode,false,cloud
+https://www.ibm.com,IBM,true,tech
+https://www.oracle.com,Oracle,true,tech
+https://www.ancestry.com,Ancestry,false,history
+https://www.nasa.gov,NASA,true,science
+https://www.mit.edu,MIT,false,education
+https://www.stanford.edu,Stanford,true,education
+https://www.harvard.edu,Harvard,true,education
+https://www.coursera.org,Coursera,false,education
+https://www.udacity.com,Udacity,true,education
+https://www.pluralsight.com,Pluralsight,true,education
+https://www.codecademy.com,Codecademy,false,education
+https://www.shopify.com,Shopify,true,e-commerce
+https://www.zillow.com,Zillow,false,real-estate
+https://www.homedepot.com,Home Depot,true,e-commerce
+https://www.target.com,Target,false,e-commerce
+https://www.costco.com,Costco,true,e-commerce
+https://www.walmart.com,Walmart,true,e-commerce
+https://www.bestbuy.com,Best Buy,false,e-commerce
+https://www.toyota.com,Toyota,true,automotive
+https://www.ford.com,Ford,false,automotive
+https://www.nissan.com,Nissan,true,automotive
+https://www.chevrolet.com,Chevrolet,false,automotive
+https://www.pepsi.com,Pepsi,false,food
+https://www.cocacola.com,Coca-Cola,true,food
+https://www.mcdonalds.com,McDonald's,false,food
+https://www.starbucks.com,Starbucks,true,food
+https://www.dominos.com,Dominio's,false,food
+https://www.kfc.com,KFC,true,food
+https://www.nike.com,Nike,false,retail
+https://www.adidas.com,Adidas,true,retail
+https://www.reebok.com,Reebok,false,retail
+https://www.underarmour.com,Under Armour,true,retail
+https://www.gucci.com,Gucci,false,fashion
+https://www.prada.com,Prada,true,fashion
+https://www.zara.com,Zara,false,fashion
+https://www.hm.com,H&M,true,fashion
+https://www.louisvuitton.com,Louis Vuitton,false,fashion
+https://www.chanel.com,Chanel,true,fashion
+https://www.hermes.com,Hermès,false,fashion
+https://www.ferrari.com,Ferrari,true,automotive
+https://www.lamborghini.com,Lamborghini,false,automotive
+https://www.porsche.com,Porsche,true,automotive
+https://www.tesla.com,Tesla,false,automotive

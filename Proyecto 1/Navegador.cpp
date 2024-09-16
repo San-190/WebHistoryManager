@@ -1,26 +1,38 @@
 #include "Navegador.h"
 
+Navegador::Navegador(): configuracion(new Configuracion(10,600)){
+    pestanas = new std::list<Pestana*>;
+    sitios = new std::vector<Sitio*>;
+    bookmarks = new std::list<Sitio*>;
+}
+
 Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)& conf) {
     pestanas = new std::list<Pestana*>;
-    sitios = new std::list<Sitio*>;
+    sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
 }
 
 Navegador::~Navegador() {
-    for (auto p : *pestanas) {
-        delete p;
+    if(configuracion)
+        delete configuracion;
+    if (pestanas) {
+        for (auto p : *pestanas) {
+            delete p;
+        }
+        delete pestanas;
     }
-    delete pestanas;
-
-    for (auto p : *sitios) {
-        delete p;
+    if (sitios) {
+        for (auto p : *sitios) {
+            delete p;
+        }
+        delete sitios;
     }
-    delete sitios;
-
-    for (auto p : *bookmarks) {
-        delete p;
+    if (bookmarks) {
+        for (auto p : *bookmarks) {
+            delete p;
+        }
+        delete bookmarks;
     }
-    delete bookmarks;
 }
 
 void Navegador::agregarPestana(const Pestana& p) {
@@ -34,3 +46,76 @@ void Navegador::agregarSitio(const Sitio& p) {
 void Navegador::agregarBookmark(const Sitio& p) {
     bookmarks->push_back((Sitio*)&p);
 }
+
+Sitio* Navegador::buscarSitio(std::string url) {
+    Sitio* sitio = new Sitio();
+    sitio->setUrl(url);
+
+    auto it = std::lower_bound(sitios->begin(), sitios->end(), sitio,[](const Sitio* a, const Sitio* b) {
+        return *a < *b;
+    });
+
+    delete sitio;
+
+    if (it != sitios->end() && (*it)->getUrl() == url) {
+        return *it;
+    }
+    return nullptr;
+}
+
+void Navegador::leerSitios(std::ifstream& archivo) {
+    const size_t tam = 2048;
+    char buffer[tam];
+
+    std::string atributo, url, titulo, tag;
+    bool bookmark = 0;
+    int contador = 1;
+
+    while (archivo.read(buffer, tam) || archivo.gcount() > 0) {
+        size_t bytes = archivo.gcount();
+        for (size_t i = 0; i < bytes; ++i) {
+            char c = buffer[i];
+
+            if (c == ',') {
+                if (contador == 1) {
+                    url = atributo;
+                }
+                else if (contador == 2) {
+                    titulo = atributo;
+                }
+                else if (contador == 3) {
+                    if ("1" == atributo)
+                        bookmark = true;
+                    else
+                        bookmark = false;
+                }
+                atributo.clear();
+                contador++;
+            }
+            else if (c == '\n') {
+                tag = atributo;
+
+                sitios->push_back(new Sitio(url, titulo, bookmark, tag));
+
+                atributo.clear();
+                contador = 1;
+            }
+            else {
+                atributo += c;
+            }
+        }
+    }
+    std::sort(sitios->begin(), sitios->end(), [](const Sitio* a, const Sitio* b) {
+        return *a < *b;
+    });
+}
+
+/*
+Recursos utilizados
+
+Funcionamiento de upper_bound y lower_bound: 
+https://www.geeksforgeeks.org/upper_bound-and-lower_bound-for-vector-in-cpp-stl/
+
+Definición y uso de funciones lambdas:
+https://learn.microsoft.com/en-us/cpp/cpp/lambda-expressions-in-cpp?view=msvc-170
+*/
