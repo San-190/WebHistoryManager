@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+//Si
 class Configuracion {
 private:
     size_t limite;

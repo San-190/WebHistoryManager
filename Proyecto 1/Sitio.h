@@ -21,4 +21,6 @@ public:
     void setTitulo(const std::string&);
     void setBookmark(bool);
     void setTag(const std::string&);
+
+    bool operator<(const Sitio&) const;
 };

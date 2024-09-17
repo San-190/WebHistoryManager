@@ -27,7 +27,7 @@ void Controladora::principalControl0() {
 	} while (op != 8);
 }
 
-void Controladora::principalControl1() {}
+void Controladora::principalControl1() { Interfaz::irASitioWeb(*navegador); }
 void Controladora::principalControl2() {}
 void Controladora::principalControl3() {}
 void Controladora::principalControl4() {}

@@ -129,6 +129,8 @@
   <ItemGroup>
     <ClInclude Include="Configuracion.h" />
     <ClInclude Include="Controladora.h" />
+    <ClInclude Include="ExcCadVacia.h" />
+    <ClInclude Include="ExcValor.h" />
     <ClInclude Include="Interfaz.h" />
     <ClInclude Include="Navegador.h" />
     <ClInclude Include="Pestana.h" />
@@ -137,6 +139,8 @@
   <ItemGroup>
     <ClCompile Include="Configuracion.cpp" />
     <ClCompile Include="Controladora.cpp" />
+    <ClCompile Include="ExcCadVacia.cpp" />
+    <ClCompile Include="ExcValor.cpp" />
     <ClCompile Include="Interfaz.cpp" />
     <ClCompile Include="Navegador.cpp" />
     <ClCompile Include="Pestana.cpp" />
