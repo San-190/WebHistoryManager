@@ -4,7 +4,7 @@ Controladora::Controladora() { navegador = Interfaz::crearNavegador(); }
 
 Controladora::~Controladora() { if (navegador) delete navegador; }
 
-void Controladora::controlInvalido(){}
+void Controladora::controlInvalido() { Interfaz::mensajeFueraDeRango(); }
 
 int Controladora::controlMenuPrincipal() { return Interfaz::menuPrincipal(*navegador); }
 
@@ -28,10 +28,26 @@ void Controladora::principalControl0() {
 }
 
 void Controladora::principalControl1() { Interfaz::irASitioWeb(*navegador); }
-void Controladora::principalControl2() {}
-void Controladora::principalControl3() {}
+void Controladora::principalControl2() { sitiosControl0(); }
+void Controladora::principalControl3() { Interfaz::crearNuevaPestana(*navegador); }
 void Controladora::principalControl4() {}
 void Controladora::principalControl5() {}
 void Controladora::principalControl6() {}
 void Controladora::principalControl7() {}
 void Controladora::principalControl8() {}
+int Controladora::controlSubmenuSitio() { return Interfaz::submenuSitio(*navegador); }
+void Controladora::sitiosControl0() {
+	int op;
+	do {
+		op = controlSubmenuSitio();
+		switch (op) {
+		case 1: sitiosControl1(); break;
+		case 2: sitiosControl2(); break;
+		case 3: break;
+		default: controlInvalido();
+		}
+	} while (op > 3 || op < 1);
+}
+void Controladora::sitiosControl1() { Interfaz::agregarMarcador(*navegador); }
+void Controladora::sitiosControl2() { }//Interfaz::(*navegador); }
+

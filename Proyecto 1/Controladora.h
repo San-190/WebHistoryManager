@@ -19,4 +19,9 @@ public:
 	void principalControl6();
 	void principalControl7();
 	void principalControl8();
+	int controlSubmenuSitio();
+	void sitiosControl0();
+	void sitiosControl1();
+	void sitiosControl2();
+
 };

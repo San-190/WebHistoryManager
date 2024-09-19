@@ -1,36 +1,32 @@
 #include "Interfaz.h"
 
 void Interfaz::mostrarMenuPrincipal() {
-	std::cout << "--------- NAVEGAROAR ---------" << "\n\n";
-	std::cout << "1) Ir a sitio web" << '\n';
-	std::cout << "2) Agregar marcador" << '\n';
-	std::cout << "3) Nueva pestaña" << '\n';
-	std::cout << "4) Búsqueda y filtros" << '\n';
-	std::cout << "5) Navegación privada" << '\n';
-	std::cout << "6) Importar/Exportar" << '\n';
-	std::cout << "7) Configuración de políticas" << '\n';
-	std::cout << "8) Salir" << "\n\n";
+	std::cout << "--------- NAVEGAROAR ---------\n\n";
+	std::cout << "1) Ir a sitio web\n";
+	std::cout << "2) Opciones del sitio\n";
+	std::cout << "3) Nueva pestaña\n";
+	std::cout << "4) Búsqueda y filtros\n";
+	std::cout << "5) Navegación privada\n";
+	std::cout << "6) Importar / Exportar\n";
+	std::cout << "7) Configuración de políticas\n";
+	std::cout << "8) Salir\n\n";
 	std::cout << "Digite la opción: ";
 }
 
 int Interfaz::menuPrincipal(Navegador& nav) {
-	int opcion;
 	system("cls");
-
 	mostrarPagina(nav);
-
 	mostrarMenuPrincipal();
-
 	while (true) {
 		if (GetAsyncKeyState(VK_UP) & 0x8000) {
 			if (!nav.moverPestanaSiguiente()) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
 				system("pause");
 			}
-			system("cls");  // Limpia la consola (similar a cambiar de página)
+			system("cls");
 			mostrarPagina(nav);
 			mostrarMenuPrincipal();
-			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
@@ -38,10 +34,10 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 				std::cout << "\nNo hay pestañas anteriores\n\n";
 				system("pause");
 			}
-			system("cls");  // Limpia la consola
+			system("cls");
 			mostrarPagina(nav);
 			mostrarMenuPrincipal();
-			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
@@ -49,10 +45,10 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 				std::cout << "\nNo hay sitios anteriores\n\n";
 				system("pause");
 			}
-			system("cls");  // Limpia la consola (similar a cambiar de página)
+			system("cls");
 			mostrarPagina(nav);
 			mostrarMenuPrincipal();
-			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
@@ -60,11 +56,13 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 				std::cout << "\nNo hay sitios siguientes\n\n";
 				system("pause");
 			}
-			system("cls");  // Limpia la consola
+			system("cls");
 			mostrarPagina(nav);
 			mostrarMenuPrincipal();
-			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+			Sleep(200);
 		}
+
+		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
 
 		if (GetAsyncKeyState(0x31) & 0x8000)
 			return 1;
@@ -83,7 +81,23 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 		if (GetAsyncKeyState(0x38) & 0x8000)
 			return 8;
 	}
-	
+}
+
+int Interfaz::submenuSitio(Navegador& nav){
+	if (nav.getSitioActual()) {
+		system("cls");
+		std::cout << "--------- NAVEGAROAR ---------\n\n";
+		std::cout << "1) Agregar / Quitar bookmark\n";
+		std::cout << "2) Agregar Tag\n";
+		std::cout << "3) Volver\n\n";
+		std::cout << "Digite la opción: ";
+		return revisaInt();
+	}
+	else {
+		std::cout << "Debe ingresar a un sitio para editar.\n\n";
+		system("pause");
+		return 3;
+	}
 }
 
 Navegador* Interfaz::crearNavegador() {
@@ -101,11 +115,20 @@ void Interfaz::irASitioWeb(Navegador& nav) {
 	std::cout << "Escriba el url de la página: ";
 	url = revisarString();
 	Sitio* sitio = nav.buscarSitio(url);
-	if (sitio)
-		std::cout << sitio->getTitulo();
+	if (sitio) {
+		nav.agregarSitioAPestana(*sitio);
+	}
 	else
-		std::cout << "Error 404";
+		std::cout << "\n404 – Not Found\n\n";
 	system("pause");
+}
+
+void Interfaz::agregarMarcador(Navegador& nav){
+	nav.agregarQuitarBookmark();
+}
+
+void Interfaz::crearNuevaPestana(Navegador& nav){
+	nav.agregarPestana(*(new Pestana));
 }
 
 
@@ -113,6 +136,7 @@ std::string Interfaz::revisarString() {
 	std::string texto;
 	bool valido = false;
 
+	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 	while (!valido) {
 		try {
 			std::getline(std::cin, texto);
@@ -135,6 +159,7 @@ std::string Interfaz::revisarString() {
 int Interfaz::revisaInt() {
 	int num;
 	bool valido = false;
+	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 
 	while (!valido) {
 		try {
@@ -160,6 +185,10 @@ int Interfaz::revisaInt() {
 void Interfaz::mostrarPagina(Navegador& nav) {
 	std::cout << nav.mostrarPestana();
 }
+void Interfaz::mensajeFueraDeRango(){
+	std::cout << "\nLa opción digitada está fuera de rango\n\n";
+	system("pause");
+}
 /*
 Recursos utilizados
 
@@ -168,4 +197,11 @@ https://www.tutorialspoint.com/isspace-function-in-cplusplus
 
 Definición de all_off:
 https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
+
+Función para detectar entradas del teclado en tiempo real.
+https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate#example
+
+ Documentación de AmiBroker sobre GetAsyncKeyState (Codigos de teclas virtuales)
+https://www.amibroker.com/guide/afl/getasynckeystate.html
+
 */

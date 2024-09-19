@@ -1,33 +1,47 @@
 #include "Pestana.h"
 
-Pestana::Pestana(int num) : numero(num) {
+int Pestana::numero = 1;
+
+Pestana::Pestana() {
     sitios = new std::list<Sitio*>;
     iterador = sitios->begin();
+    id = numero++;
 }
 
 Pestana::~Pestana() {
-    for (auto p : *sitios) {
-        delete p;
-    }
     delete sitios;
 }
 
 int Pestana::getNumero() const { return numero; }
 
 void Pestana::agregarSitio(const Sitio& sitio) {
-    sitios->push_back((Sitio*)&sitio);
+    if (sitios->empty()) {
+        sitios->push_back((Sitio*)&sitio);
+        iterador = sitios->begin();
+    }
+    else {
+        if((*iterador)->getUrl() != sitio.getUrl()){
+            sitios->push_back((Sitio*)&sitio);
+            iterador = --sitios->end();
+        }
+    }
 }
 
 std::string Pestana::mostrarPestana(){
     std::stringstream s;
-    s << "    Pestaña #" << numero << '\n';
+    s << "    Pestaña #" << id << '\n';
     if (sitios->empty())
-        s << "Busque una página\n";
+        s << "Busque una página\n\n";
     else {
-        s << (*iterador)->getUrl() << '\n';
-        s << (*iterador)->getTitulo() << "\n\n";
+        s << (*iterador)->toString();
     }
     return s.str();
+}
+
+Sitio* Pestana::getSitioActual(){
+    if(!sitios->empty())
+        return *iterador;
+    return nullptr;
 }
 
 bool Pestana::moverSitioAnterior(){
