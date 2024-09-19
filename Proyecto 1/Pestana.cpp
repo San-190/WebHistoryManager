@@ -3,6 +3,7 @@
 int Pestana::numero = 1;
 
 Pestana::Pestana() {
+    incognito = false;
     sitios = new std::list<Sitio*>;
     iterador = sitios->begin();
     id = numero++;
@@ -13,6 +14,14 @@ Pestana::~Pestana() {
 }
 
 int Pestana::getNumero() const { return numero; }
+
+bool Pestana::getIncognito(){
+    return incognito;
+}
+
+void Pestana::setIncognito(bool in){
+    incognito = in;
+}
 
 void Pestana::agregarSitio(const Sitio& sitio) {
     if (sitios->empty()) {
@@ -29,9 +38,11 @@ void Pestana::agregarSitio(const Sitio& sitio) {
 
 std::string Pestana::mostrarPestana(){
     std::stringstream s;
-    s << "    Pestaña #" << id << '\n';
+    s << "    Pestaña #" << id;
+    if (incognito)
+        s << " (Incógnita)";
     if (sitios->empty())
-        s << "Busque una página\n\n";
+        s << "\nBusque una página\n\n";
     else {
         s << (*iterador)->toString();
     }
@@ -66,5 +77,17 @@ bool Pestana::moverSitioSiguiente(){
     else{
         iterador--;
         return false;
+    }
+}
+
+void Pestana::serializarPestana(std::ofstream& archivo){
+    archivo.write(reinterpret_cast<const char*>(&incognito), sizeof(incognito));
+    archivo.write(reinterpret_cast<const char*>(&id), sizeof(id));
+
+    for (const auto& sitio : *sitios) {
+        std::string url = sitio->getUrl();
+        size_t tam = url.size();
+        archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+        archivo.write(url.c_str(), tam); 
     }
 }

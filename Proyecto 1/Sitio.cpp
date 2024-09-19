@@ -23,7 +23,7 @@ void Sitio::setTag(const std::string& tg) { tag = tg; }
 
 std::string Sitio::toString() {
     std::stringstream s;
-    s << url << '\n';
+    s << '\n' << url << '\n';
     s << titulo << '\n';
     if (bookmark)
         s << "Favorito * \n";

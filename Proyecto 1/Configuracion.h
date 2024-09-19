@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
-//Si
+#include <fstream>
+
 class Configuracion {
 private:
     size_t limite;
@@ -15,4 +16,6 @@ public:
 
     void setLimite(size_t);
     void setTiempo(double);
+
+    void serializarConfiguracion(std::ofstream&);
 };

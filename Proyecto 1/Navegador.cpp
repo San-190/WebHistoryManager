@@ -1,6 +1,7 @@
 #include "Navegador.h"
 
 Navegador::Navegador(): configuracion(new Configuracion(10,600)){
+    privado = false;
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
@@ -9,6 +10,7 @@ Navegador::Navegador(): configuracion(new Configuracion(10,600)){
 }
 
 Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)& conf) {
+    privado = false;
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
@@ -36,7 +38,9 @@ Navegador::~Navegador() {
     }
 }
 
-void Navegador::agregarPestana(const Pestana& p) {
+void Navegador::agregarPestana(Pestana& p) {
+    if (privado)
+        p.setIncognito(true);
     pestanas->push_back((Pestana*)&p);
     iterador = --pestanas->end();
 }
@@ -59,7 +63,6 @@ void Navegador::agregarQuitarBookmark() {
         else
             bookmarks->push_back(nuevo);
     }
-    
 }
 
 Sitio* Navegador::buscarSitio(std::string url) {
@@ -125,10 +128,12 @@ void Navegador::leerSitios(std::ifstream& archivo) {
     });
 }
 
-std::string Navegador::mostrarPestana()
-{
+std::string Navegador::mostrarPestana(){
+    std::string s = "";
+    if (privado)
+        s = "   Modo Incognito Activado\n\n";
     if (*iterador != nullptr){
-        return (*iterador)->mostrarPestana();
+        return s + (*iterador)->mostrarPestana();
     }
     return "No hay pestañas\n";
 }
@@ -166,8 +171,91 @@ bool Navegador::moverSitioSiguiente(){
     return (*iterador)->moverSitioSiguiente();
 }
 
+void Navegador::cambiarModoIncognito(){
+    if (privado)
+        desactivarModoIncognito();
+    else
+        activarModoIncognito();
+}
+
+void Navegador::activarModoIncognito(){
+    privado = true;
+    agregarPestana(*new Pestana);
+    incognito = iterador;
+}
+
+void Navegador::desactivarModoIncognito(){
+    bool bandera = false;
+    privado = false;
+    Pestana* aux = nullptr;
+    while (incognito != pestanas->end()) {
+        if (!bandera && iterador == incognito)
+            bandera = true;
+        Pestana::numero--;
+        aux = *incognito;
+        incognito++;
+        pestanas->remove(aux);
+        delete aux;
+    }
+    if (bandera)
+        iterador = --pestanas->end();
+}
+
 Sitio* Navegador::getSitioActual(){
     return (*iterador)->getSitioActual();
+}
+
+void Navegador::serializarNavegador(std::ofstream& archivo) {
+    archivo.write(reinterpret_cast<const char*>(&privado), sizeof(privado));
+
+    size_t tam = pestanas->size();
+    archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+
+    for (const auto& pestana : *pestanas)
+        pestana->serializarPestana(archivo);
+
+    // Solo se guardan los URLs porque los sitios ya están en el archivo .csv
+    for (const auto& bookmark : *bookmarks) {
+        std::string url = bookmark->getUrl();
+        tam = url.size();
+        archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+        archivo.write(url.c_str(), tam);
+    }
+
+    configuracion->serializarConfiguracion(archivo);
+}
+
+void Navegador::deserializarNavegador(std::ifstream& archivo){
+    //char buffer[2048];
+
+    //archivo.read(buffer, sizeof(privado));
+    //std::memcpy(&privado, buffer, sizeof(privado));
+
+    //size_t cantidadPestanas;
+    //archivo.read(buffer, sizeof(cantidadPestanas));
+    //std::memcpy(&cantidadPestanas, buffer, sizeof(cantidadPestanas));
+
+    //pestanas = new std::list<Pestana*>();
+    //for (size_t i = 0; i < cantidadPestanas; ++i) {
+    //    Pestana* pestana = new Pestana();
+    //    pestana->deserializar(archivo);
+    //    pestanas->push_back(pestana);
+    //}
+
+    //bookmarks = new std::list<Sitio*>();
+    //while (archivo.peek() != EOF) {
+    //    size_t urlLength;
+    //    archivo.read(buffer, sizeof(urlLength));
+    //    std::memcpy(&urlLength, buffer, sizeof(urlLength));
+
+    //    archivo.read(buffer, urlLength);
+    //    std::string url(buffer, urlLength);
+
+    //    bookmarks->push_back(buscarSitio(url));
+    //}
+
+    //configuracion = new Configuracion();
+    //configuracion->deserializar(archivo);
 }
 
 /*

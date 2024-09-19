@@ -31,11 +31,12 @@ void Controladora::principalControl1() { Interfaz::irASitioWeb(*navegador); }
 void Controladora::principalControl2() { sitiosControl0(); }
 void Controladora::principalControl3() { Interfaz::crearNuevaPestana(*navegador); }
 void Controladora::principalControl4() {}
-void Controladora::principalControl5() {}
+void Controladora::principalControl5() { Interfaz::cambiarModoIncognito(*navegador); }
 void Controladora::principalControl6() {}
 void Controladora::principalControl7() {}
 void Controladora::principalControl8() {}
 int Controladora::controlSubmenuSitio() { return Interfaz::submenuSitio(*navegador); }
+
 void Controladora::sitiosControl0() {
 	int op;
 	do {
@@ -49,5 +50,4 @@ void Controladora::sitiosControl0() {
 	} while (op > 3 || op < 1);
 }
 void Controladora::sitiosControl1() { Interfaz::agregarMarcador(*navegador); }
-void Controladora::sitiosControl2() { }//Interfaz::(*navegador); }
-
+void Controladora::sitiosControl2() { }//Interfaz::(*navegador);

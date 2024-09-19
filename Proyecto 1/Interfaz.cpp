@@ -4,10 +4,10 @@ void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "--------- NAVEGAROAR ---------\n\n";
 	std::cout << "1) Ir a sitio web\n";
 	std::cout << "2) Opciones del sitio\n";
-	std::cout << "3) Nueva pestaña\n";
-	std::cout << "4) Búsqueda y filtros\n";
-	std::cout << "5) Navegación privada\n";
-	std::cout << "6) Importar / Exportar\n";
+	std::cout << "3) Añadir nueva pestaña\n";
+	std::cout << "4) Búsqueda de sitios y filtros\n";
+	std::cout << "5) Activar/Desactivar Modo Incógnito\n";
+	std::cout << "6) Importar/Exportar sesiones\n";
 	std::cout << "7) Configuración de políticas\n";
 	std::cout << "8) Salir\n\n";
 	std::cout << "Digite la opción: ";
@@ -115,12 +115,12 @@ void Interfaz::irASitioWeb(Navegador& nav) {
 	std::cout << "Escriba el url de la página: ";
 	url = revisarString();
 	Sitio* sitio = nav.buscarSitio(url);
-	if (sitio) {
+	if (sitio)
 		nav.agregarSitioAPestana(*sitio);
-	}
-	else
+	else {
 		std::cout << "\n404 – Not Found\n\n";
-	system("pause");
+		system("pause");
+	}
 }
 
 void Interfaz::agregarMarcador(Navegador& nav){
@@ -129,6 +129,10 @@ void Interfaz::agregarMarcador(Navegador& nav){
 
 void Interfaz::crearNuevaPestana(Navegador& nav){
 	nav.agregarPestana(*(new Pestana));
+}
+
+void Interfaz::cambiarModoIncognito(Navegador& nav){
+	nav.cambiarModoIncognito();
 }
 
 
@@ -189,6 +193,32 @@ void Interfaz::mensajeFueraDeRango(){
 	std::cout << "\nLa opción digitada está fuera de rango\n\n";
 	system("pause");
 }
+void Interfaz::serializar(Navegador& nav){
+	std::cout << "Ingrese el nombre del archivo de guardado (sin extensión): ";
+	std::string nombre = revisarString();
+	std::ofstream archivo(nombre+".dat", std::ios::binary);
+
+	if (archivo.fail())
+		std::cout << "No se puede abrir el archivo\n\n";
+	else {
+		nav.serializarNavegador(archivo);
+		archivo.close();
+	}
+}
+
+void Interfaz::deserializar(Navegador& nav){
+	std::cout << "Ingrese el nombre del archivo de lectura (sin extensión): ";
+	std::string nombre = revisarString();
+	std::ifstream archivo(nombre + ".dat", std::ios::binary);
+
+	if (archivo.fail())
+		std::cout << "No se ha encontrado la sesión\n\n";
+	else {
+		nav.deserializarNavegador(archivo);
+		archivo.close();
+	}
+}
+
 /*
 Recursos utilizados
 
