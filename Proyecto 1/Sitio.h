@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include<sstream>
+#include <sstream>
 
 class Sitio {
 private:
