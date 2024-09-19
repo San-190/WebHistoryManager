@@ -29,3 +29,28 @@ std::string Pestana::mostrarPestana(){
     }
     return s.str();
 }
+
+bool Pestana::moverSitioAnterior(){
+    if (sitios->empty())
+        return false;
+    if (iterador != sitios->begin()) {
+        iterador--;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool Pestana::moverSitioSiguiente(){
+    if (sitios->empty())
+        return false;
+
+    iterador++;
+    if (iterador != sitios->end()) {
+        return true;
+    }
+    else{
+        iterador--;
+        return false;
+    }
+}

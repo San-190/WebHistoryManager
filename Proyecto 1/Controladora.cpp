@@ -6,7 +6,7 @@ Controladora::~Controladora() { if (navegador) delete navegador; }
 
 void Controladora::controlInvalido(){}
 
-int Controladora::controlMenuPrincipal() { return Interfaz::menuPrincipal(); }
+int Controladora::controlMenuPrincipal() { return Interfaz::menuPrincipal(*navegador); }
 
 void Controladora::principalControl0() {
 	int op;

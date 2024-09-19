@@ -10,6 +10,7 @@ private:
     std::list<Pestana*>* pestanas;
     std::vector<Sitio*>* sitios;
     std::list<Sitio*>* bookmarks;
+    std::list<Pestana*>::const_iterator iterador;
     Configuracion* configuracion;
 
 public:
@@ -27,4 +28,12 @@ public:
     Sitio* buscarSitio(std::string);
 
     void leerSitios(std::ifstream&);
+
+    std::string mostrarPestana();
+    
+    bool moverPestanaAnterior();
+    bool moverPestanaSiguiente();
+
+    bool moverSitioAnterior();
+    bool moverSitioSiguiente();
 };
