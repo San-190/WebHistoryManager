@@ -4,7 +4,7 @@ Navegador::Navegador(): configuracion(new Configuracion(10,600)){
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
-    pestanas->push_back(new Pestana(1));
+    pestanas->push_back(new Pestana);
     iterador = pestanas->begin();
 }
 
@@ -12,7 +12,7 @@ Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
-    pestanas->push_back(new Pestana(1));
+    pestanas->push_back(new Pestana);
     iterador = pestanas->begin();
 }
 
@@ -32,23 +32,34 @@ Navegador::~Navegador() {
         delete sitios;
     }
     if (bookmarks) {
-        for (auto p : *bookmarks) {
-            delete p;
-        }
         delete bookmarks;
     }
 }
 
 void Navegador::agregarPestana(const Pestana& p) {
     pestanas->push_back((Pestana*)&p);
+    iterador = --pestanas->end();
+}
+
+void Navegador::agregarSitioAPestana(Sitio& sitio){
+    (*iterador)->agregarSitio(sitio);
 }
 
 void Navegador::agregarSitio(const Sitio& p) {
-    sitios->push_back((Sitio*)&p);
+    sitios->push_back((Sitio*)&p);  
 }
 
-void Navegador::agregarBookmark(const Sitio& p) {
-    bookmarks->push_back((Sitio*)&p);
+void Navegador::agregarQuitarBookmark() {
+    Sitio* nuevo = getSitioActual();
+    if (nuevo) {
+        nuevo->setBookmark(!nuevo->getBookmark());
+        
+        if (!nuevo->getBookmark())
+            bookmarks->remove(nuevo);
+        else
+            bookmarks->push_back(nuevo);
+    }
+    
 }
 
 Sitio* Navegador::buscarSitio(std::string url) {
@@ -153,6 +164,10 @@ bool Navegador::moverSitioAnterior(){
 
 bool Navegador::moverSitioSiguiente(){
     return (*iterador)->moverSitioSiguiente();
+}
+
+Sitio* Navegador::getSitioActual(){
+    return (*iterador)->getSitioActual();
 }
 
 /*

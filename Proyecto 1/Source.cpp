@@ -5,5 +5,6 @@ int main(int argc, char* argv[]) {
 	Controladora* controladora = new Controladora;
 	controladora->principalControl0();
 	delete controladora;
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

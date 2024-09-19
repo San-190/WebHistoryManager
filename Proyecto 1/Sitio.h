@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include<sstream>
 
 class Sitio {
 private:
@@ -21,6 +22,8 @@ public:
     void setTitulo(const std::string&);
     void setBookmark(bool);
     void setTag(const std::string&);
+
+    std::string toString();
 
     bool operator<(const Sitio&) const;
 };
