@@ -1,8 +1,6 @@
 #include "Interfaz.h"
 
-int Interfaz::menuPrincipal() {
-	int opcion;
-	system("cls");
+void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "--------- NAVEGAROAR ---------" << "\n\n";
 	std::cout << "1) Ir a sitio web" << '\n';
 	std::cout << "2) Agregar marcador" << '\n';
@@ -13,8 +11,79 @@ int Interfaz::menuPrincipal() {
 	std::cout << "7) Configuración de políticas" << '\n';
 	std::cout << "8) Salir" << "\n\n";
 	std::cout << "Digite la opción: ";
-	opcion = revisaInt();
-	return opcion;
+}
+
+int Interfaz::menuPrincipal(Navegador& nav) {
+	int opcion;
+	system("cls");
+
+	mostrarPagina(nav);
+
+	mostrarMenuPrincipal();
+
+	while (true) {
+		if (GetAsyncKeyState(VK_UP) & 0x8000) {
+			if (!nav.moverPestanaSiguiente()) {
+				std::cout << "\nNo hay pestañas siguientes\n\n";
+				system("pause");
+			}
+			system("cls");  // Limpia la consola (similar a cambiar de página)
+			mostrarPagina(nav);
+			mostrarMenuPrincipal();
+			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+		}
+
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+			if (!nav.moverPestanaAnterior()) {
+				std::cout << "\nNo hay pestañas anteriores\n\n";
+				system("pause");
+			}
+			system("cls");  // Limpia la consola
+			mostrarPagina(nav);
+			mostrarMenuPrincipal();
+			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+		}
+
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+			if (!nav.moverSitioAnterior()) {
+				std::cout << "\nNo hay sitios anteriores\n\n";
+				system("pause");
+			}
+			system("cls");  // Limpia la consola (similar a cambiar de página)
+			mostrarPagina(nav);
+			mostrarMenuPrincipal();
+			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+		}
+
+		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+			if (!nav.moverSitioSiguiente()) {
+				std::cout << "\nNo hay sitios siguientes\n\n";
+				system("pause");
+			}
+			system("cls");  // Limpia la consola
+			mostrarPagina(nav);
+			mostrarMenuPrincipal();
+			Sleep(200);  // Retraso para evitar múltiples entradas rápidas
+		}
+
+		if (GetAsyncKeyState(0x31) & 0x8000)
+			return 1;
+		if (GetAsyncKeyState(0x32) & 0x8000)
+			return 2;
+		if (GetAsyncKeyState(0x33) & 0x8000)
+			return 3;
+		if (GetAsyncKeyState(0x34) & 0x8000)
+			return 4;
+		if (GetAsyncKeyState(0x35) & 0x8000)
+			return 5;
+		if (GetAsyncKeyState(0x36) & 0x8000)
+			return 6;
+		if (GetAsyncKeyState(0x37) & 0x8000)
+			return 7;
+		if (GetAsyncKeyState(0x38) & 0x8000)
+			return 8;
+	}
+	
 }
 
 Navegador* Interfaz::crearNavegador() {
@@ -51,7 +120,7 @@ std::string Interfaz::revisarString() {
 			if (texto.empty() || std::all_of(texto.begin(), texto.end(), isspace)) {
 				throw ExcCadVacia();
 			}
-			valido = true; 
+			valido = true;
 		}
 		catch (const ExcCadVacia& e) {
 			std::cout << e.what() << '\n';
@@ -87,6 +156,9 @@ int Interfaz::revisaInt() {
 		}
 	}
 	return num;
+}
+void Interfaz::mostrarPagina(Navegador& nav) {
+	std::cout << nav.mostrarPestana();
 }
 /*
 Recursos utilizados

@@ -4,12 +4,16 @@ Navegador::Navegador(): configuracion(new Configuracion(10,600)){
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
+    pestanas->push_back(new Pestana(1));
+    iterador = pestanas->begin();
 }
 
 Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)& conf) {
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
     bookmarks = new std::list<Sitio*>;
+    pestanas->push_back(new Pestana(1));
+    iterador = pestanas->begin();
 }
 
 Navegador::~Navegador() {
@@ -108,6 +112,47 @@ void Navegador::leerSitios(std::ifstream& archivo) {
     std::sort(sitios->begin(), sitios->end(), [](const Sitio* a, const Sitio* b) {
         return *a < *b;
     });
+}
+
+std::string Navegador::mostrarPestana()
+{
+    if (*iterador != nullptr){
+        return (*iterador)->mostrarPestana();
+    }
+    return "No hay pestañas\n";
+}
+
+bool Navegador::moverPestanaAnterior(){
+    if (pestanas->empty())
+        return false;
+
+    if (iterador != pestanas->begin()) {
+        iterador--; 
+        return true;
+    }
+    else
+        return false;
+}
+
+bool Navegador::moverPestanaSiguiente(){
+    if (pestanas->empty())
+        return false;
+
+    iterador++;
+    if (iterador != pestanas->end())
+        return true;
+    else{
+        iterador--;
+        return false;
+    }
+}
+
+bool Navegador::moverSitioAnterior(){
+    return (*iterador)->moverSitioAnterior();
+}
+
+bool Navegador::moverSitioSiguiente(){
+    return (*iterador)->moverSitioSiguiente();
 }
 
 /*

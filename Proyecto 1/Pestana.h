@@ -18,4 +18,7 @@ public:
 
     void agregarSitio(const Sitio& sitio);
     std::string mostrarPestana();
+
+    bool moverSitioAnterior();
+    bool moverSitioSiguiente();
 };
