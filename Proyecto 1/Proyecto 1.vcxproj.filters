@@ -39,6 +39,9 @@
     <ClInclude Include="ExcValor.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="Bookmark.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Configuracion.cpp">
@@ -66,6 +69,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="ExcValor.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Bookmark.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

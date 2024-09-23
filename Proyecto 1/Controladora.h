@@ -23,5 +23,6 @@ public:
 	void sitiosControl0();
 	void sitiosControl1();
 	void sitiosControl2();
+	void sitiosControl3();
 
 };

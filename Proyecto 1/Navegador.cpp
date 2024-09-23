@@ -56,13 +56,26 @@ void Navegador::agregarSitio(const Sitio& p) {
 void Navegador::agregarQuitarBookmark() {
     Sitio* nuevo = getSitioActual();
     if (nuevo) {
-        nuevo->setBookmark(!nuevo->getBookmark());
-        
-        if (!nuevo->getBookmark())
-            bookmarks->remove(nuevo);
-        else
+        if (!nuevo->getBookmark()) {
+            nuevo->setBookmark(*(new Bookmark()));
             bookmarks->push_back(nuevo);
+        }
+        else {
+            nuevo->quitarBookmark();
+            bookmarks->remove(nuevo);
+        }
     }
+}
+
+bool Navegador::agregarTag(std::string& s){
+    Sitio* sitio= getSitioActual();
+    return sitio->agregarTag(s);
+}
+
+bool Navegador::quitarTag(std::string& s)
+{
+    Sitio* sitio = getSitioActual();
+    return sitio->quitarTag(s);
 }
 
 Sitio* Navegador::buscarSitio(std::string url) {
@@ -84,10 +97,7 @@ Sitio* Navegador::buscarSitio(std::string url) {
 void Navegador::leerSitios(std::ifstream& archivo) {
     const size_t tam = 2048;
     char buffer[tam];
-
-    std::string atributo, url, titulo, tag;
-    bool bookmark = 0;
-    int contador = 1;
+    std::string url, titulo, atributo;
 
     while (archivo.read(buffer, tam) || archivo.gcount() > 0) {
         size_t bytes = archivo.gcount();
@@ -95,37 +105,24 @@ void Navegador::leerSitios(std::ifstream& archivo) {
             char c = buffer[i];
 
             if (c == ',') {
-                if (contador == 1) {
-                    url = atributo;
-                }
-                else if (contador == 2) {
-                    titulo = atributo;
-                }
-                else if (contador == 3) {
-                    if ("1" == atributo)
-                        bookmark = true;
-                    else
-                        bookmark = false;
-                }
+                url = atributo;
                 atributo.clear();
-                contador++;
             }
             else if (c == '\n') {
-                tag = atributo;
-
-                sitios->push_back(new Sitio(url, titulo, bookmark, tag));
-
+                titulo = atributo;
+                sitios->push_back(new Sitio(url, titulo));  
+                url.clear();
+                titulo.clear();
                 atributo.clear();
-                contador = 1;
             }
             else {
-                atributo += c;
+                atributo += c; 
             }
         }
     }
     std::sort(sitios->begin(), sitios->end(), [](const Sitio* a, const Sitio* b) {
         return *a < *b;
-    });
+        });
 }
 
 std::string Navegador::mostrarPestana(){
