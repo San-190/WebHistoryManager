@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Bookmark.h" />
     <ClInclude Include="Configuracion.h" />
     <ClInclude Include="Controladora.h" />
     <ClInclude Include="ExcCadVacia.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Sitio.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bookmark.cpp" />
     <ClCompile Include="Configuracion.cpp" />
     <ClCompile Include="Controladora.cpp" />
     <ClCompile Include="ExcCadVacia.cpp" />

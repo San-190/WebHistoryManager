@@ -13,6 +13,22 @@ void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "Digite la opción: ";
 }
 
+void Interfaz::mostrarMensajeFinal(){
+	std::cout << "\n\nCerrando el NAVEGAROAR\n\n";
+}
+
+void Interfaz::mostrarSitio(Navegador& nav)
+{
+	Sitio* sitio = nav.getSitioActual();
+	Bookmark* book;
+	if (sitio) {
+		std::cout << "Estas en el sitio: " << sitio->getUrl() << '\n';
+		book = sitio->getBookmark();
+		if (book)
+			std::cout << book->toString() << "\n\n";
+	}
+}
+
 int Interfaz::menuPrincipal(Navegador& nav) {
 	system("cls");
 	mostrarPagina(nav);
@@ -86,10 +102,12 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 int Interfaz::submenuSitio(Navegador& nav){
 	if (nav.getSitioActual()) {
 		system("cls");
+		mostrarSitio(nav);
 		std::cout << "--------- NAVEGAROAR ---------\n\n";
 		std::cout << "1) Agregar / Quitar bookmark\n";
 		std::cout << "2) Agregar Tag\n";
-		std::cout << "3) Volver\n\n";
+		std::cout << "3) Eliminar Tag\n";
+		std::cout << "4) Volver\n\n";
 		std::cout << "Digite la opción: ";
 		return revisaInt();
 	}
@@ -112,7 +130,7 @@ Navegador* Interfaz::crearNavegador() {
 
 void Interfaz::irASitioWeb(Navegador& nav) {
 	std::string url;
-	std::cout << "Escriba el url de la página: ";
+	std::cout << "\n\nEscriba el url de la página: ";
 	url = revisarString();
 	Sitio* sitio = nav.buscarSitio(url);
 	if (sitio)
@@ -125,6 +143,41 @@ void Interfaz::irASitioWeb(Navegador& nav) {
 
 void Interfaz::agregarMarcador(Navegador& nav){
 	nav.agregarQuitarBookmark();
+}
+
+void Interfaz::agregarTag(Navegador& nav) {
+	Sitio* s = nav.getSitioActual();
+	std::string tag;
+	if (s && s->getBookmark()) {
+		std::cout << "Ingrese el tag: ";
+		tag = revisarString();
+		if (!nav.agregarTag(tag)) {
+			std::cout << "El tag ya existe\n\n";
+			system("pause");
+		}
+	}
+	else {
+		std::cout << "No se puede agregar tag porque no se encuentra en un sitio favorito\n\n";
+		system("pause");
+	}
+}
+
+void Interfaz::quitarTag(Navegador& nav)
+{
+	Sitio* s = nav.getSitioActual();
+	std::string tag;
+	if (s && s->getBookmark()) {
+		std::cout << "Ingrese el tag que desea eliminar: ";
+		tag = revisarString();
+		if (!nav.quitarTag(tag)) {
+			std::cout << "El tag no existe\n\n";
+			system("pause");
+		}
+	}
+	else {
+		std::cout << "No se puede agregar tag porque no se encuentra en un sitio favorito\n\n";
+		system("pause");
+	}
 }
 
 void Interfaz::crearNuevaPestana(Navegador& nav){

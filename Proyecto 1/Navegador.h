@@ -1,4 +1,4 @@
-#pragma onc
+#pragma once
 #include<vector>
 #include<algorithm>
 #include"Pestana.h"
@@ -23,6 +23,8 @@ public:
     void agregarSitioAPestana(Sitio&);
     void agregarSitio(const Sitio& p);
     void agregarQuitarBookmark();
+    bool agregarTag(std::string&);
+    bool quitarTag(std::string&);
 
     Sitio* buscarSitio(std::string);
     void leerSitios(std::ifstream&);

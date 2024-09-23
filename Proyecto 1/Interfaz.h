@@ -9,11 +9,15 @@
 class Interfaz{
 public:
 	static void mostrarMenuPrincipal();
+	static void mostrarMensajeFinal();
+	static void mostrarSitio(Navegador&);
 	static int menuPrincipal(Navegador&);
 	static int submenuSitio(Navegador&);
 	static Navegador* crearNavegador();
 	static void irASitioWeb(Navegador&);
 	static void agregarMarcador(Navegador&);
+	static void agregarTag(Navegador&);
+	static void quitarTag(Navegador&);
 	static void crearNuevaPestana(Navegador&);
 	static void cambiarModoIncognito(Navegador&);
 	static std::string revisarString();
