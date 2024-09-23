@@ -16,3 +16,8 @@ void Configuracion::serializarConfiguracion(std::ofstream& archivo) {
     archivo.write(reinterpret_cast<const char*>(&limite), sizeof(limite));
     archivo.write(reinterpret_cast<const char*>(&tiempo), sizeof(tiempo));
 }
+
+void Configuracion::deserializarConfiguracion(std::ifstream& archivo) {
+    archivo.read(reinterpret_cast<char*>(&limite), sizeof(limite));
+    archivo.read(reinterpret_cast<char*>(&tiempo), sizeof(tiempo));
+}

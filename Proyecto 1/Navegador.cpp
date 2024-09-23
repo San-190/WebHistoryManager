@@ -19,19 +19,23 @@ Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)
 }
 
 Navegador::~Navegador() {
-    if(configuracion)
+    eliminaTodo();
+    if (sitios) {
+        for (auto p : *sitios) {
+            delete p;
+        }
+        delete sitios;
+    }
+}
+
+void Navegador::eliminaTodo() {
+    if (configuracion)
         delete configuracion;
     if (pestanas) {
         for (auto p : *pestanas) {
             delete p;
         }
         delete pestanas;
-    }
-    if (sitios) {
-        for (auto p : *sitios) {
-            delete p;
-        }
-        delete sitios;
     }
     if (bookmarks) {
         delete bookmarks;
@@ -204,56 +208,113 @@ Sitio* Navegador::getSitioActual(){
 
 void Navegador::serializarNavegador(std::ofstream& archivo) {
     archivo.write(reinterpret_cast<const char*>(&privado), sizeof(privado));
+    if (privado) {
+        int num = (*incognito)->getNumero();
+        archivo.write(reinterpret_cast<const char*>(&num), sizeof(num));
+    }
 
     size_t tam = pestanas->size();
     archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
 
-    for (const auto& pestana : *pestanas)
+    for (auto pestana : *pestanas)
         pestana->serializarPestana(archivo);
 
-    // Solo se guardan los URLs porque los sitios ya están en el archivo .csv
-    for (const auto& bookmark : *bookmarks) {
-        std::string url = bookmark->getUrl();
+    for (auto sitio : *bookmarks) {
+        std::string url = sitio->getUrl();
         tam = url.size();
         archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
         archivo.write(url.c_str(), tam);
+
+        Bookmark* bookmark = sitio->getBookmark();
+        bookmark->serializarBookmark(archivo);
     }
 
     configuracion->serializarConfiguracion(archivo);
 }
 
-void Navegador::deserializarNavegador(std::ifstream& archivo){
-    //char buffer[2048];
+void Navegador::deserializarNavegador(std::ifstream& archivo) {
+    eliminaTodo();
+    archivo.read(reinterpret_cast<char*>(&privado), sizeof(privado));
+    int num = 0;
 
-    //archivo.read(buffer, sizeof(privado));
-    //std::memcpy(&privado, buffer, sizeof(privado));
+    if (privado)
+        archivo.read(reinterpret_cast<char*>(&num), sizeof(num));
 
-    //size_t cantidadPestanas;
-    //archivo.read(buffer, sizeof(cantidadPestanas));
-    //std::memcpy(&cantidadPestanas, buffer, sizeof(cantidadPestanas));
+    deserializarPestana(archivo, num);
 
-    //pestanas = new std::list<Pestana*>();
-    //for (size_t i = 0; i < cantidadPestanas; ++i) {
-    //    Pestana* pestana = new Pestana();
-    //    pestana->deserializar(archivo);
-    //    pestanas->push_back(pestana);
-    //}
+    size_t tam;
+    archivo.read(reinterpret_cast<char*>(&tam), sizeof(tam));
 
-    //bookmarks = new std::list<Sitio*>();
-    //while (archivo.peek() != EOF) {
-    //    size_t urlLength;
-    //    archivo.read(buffer, sizeof(urlLength));
-    //    std::memcpy(&urlLength, buffer, sizeof(urlLength));
+    for (size_t i = 1; i <= tam; ++i) {
+        size_t caracteres;
+        archivo.read(reinterpret_cast<char*>(&caracteres), sizeof(caracteres));
 
-    //    archivo.read(buffer, urlLength);
-    //    std::string url(buffer, urlLength);
+        // Se inicializa un string (con espacios vacíos) del tamaño adecuado
+        std::string url(caracteres, ' ');
+        // Se lee desde el primer caracter hasta el último
+        archivo.read(&url[0], caracteres);
 
-    //    bookmarks->push_back(buscarSitio(url));
-    //}
+        Sitio* sitio = buscarSitio(url);
+        bookmarks->push_back(sitio);
 
-    //configuracion = new Configuracion();
-    //configuracion->deserializar(archivo);
+        Bookmark* bookmark = new Bookmark();
+        deserializarBookmark(archivo, *bookmark);
+        sitio->setBookmark(*bookmark);
+    }
+
+    configuracion->deserializarConfiguracion(archivo);
 }
+
+void Navegador::deserializarPestana(std::ifstream& archivo, int num) {
+    size_t tam;
+    archivo.read(reinterpret_cast<char*>(&tam), sizeof(tam));
+
+    for (size_t i = 1; i <= tam; ++i) {
+        Pestana* pestana = new Pestana();
+        bool ing;
+        int id;
+
+        archivo.read(reinterpret_cast<char*>(&ing), sizeof(ing));
+        pestana->setIncognito(ing);
+        archivo.read(reinterpret_cast<char*>(&id), sizeof(id));
+        pestana->setNumero(id);
+
+        size_t can=0;
+        archivo.read(reinterpret_cast<char*>(can), sizeof(can));
+
+        for (size_t i = 1; i <= can; ++i) {
+            size_t caracteres;
+            archivo.read(reinterpret_cast<char*>(&caracteres), sizeof(caracteres));
+
+            std::string url(caracteres, ' ');
+            archivo.read(&url[0], caracteres);
+
+            Sitio* sitio = buscarSitio(url);
+            sitios->push_back(sitio);
+        }
+
+        pestanas->push_back(pestana);
+        if (i == num)
+            incognito = --pestanas->end();
+    }
+}
+
+
+void Navegador::deserializarBookmark(std::ifstream& archivo, Bookmark& bookmark) {
+    size_t tam;
+    archivo.read(reinterpret_cast<char*>(&tam), sizeof(tam));
+
+    for (size_t i = 0; i < tam; ++i) {
+        size_t caracteres;
+        archivo.read(reinterpret_cast<char*>(&caracteres), sizeof(caracteres));
+
+        std::string tag(caracteres, ' ');
+        archivo.read(&tag[0], caracteres);
+
+        bookmark.agregarTag(tag);
+    }
+}
+
 
 /*
 Recursos utilizados

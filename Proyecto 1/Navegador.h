@@ -18,6 +18,7 @@ public:
     Navegador();
     Navegador(const Configuracion&);
     ~Navegador();
+    void eliminaTodo();
 
     void agregarPestana(Pestana& p);
     void agregarSitioAPestana(Sitio&);
@@ -29,7 +30,7 @@ public:
     Sitio* buscarSitio(std::string);
     void leerSitios(std::ifstream&);
     std::string mostrarPestana();
-    
+
     bool moverPestanaAnterior();
     bool moverPestanaSiguiente();
     bool moverSitioAnterior();
@@ -42,4 +43,9 @@ public:
 
     void serializarNavegador(std::ofstream&);
     void deserializarNavegador(std::ifstream&);
+
+    // Estas deserializaciones se realizan aquí ya que se requiere 
+    // buscar los sitios en la lista de sitios leída desde el .csv
+    void deserializarPestana(std::ifstream&, int);
+    void deserializarBookmark(std::ifstream&, Bookmark&);
 };

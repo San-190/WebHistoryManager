@@ -18,4 +18,5 @@ public:
     void setTiempo(double);
 
     void serializarConfiguracion(std::ofstream&);
+    void deserializarConfiguracion(std::ifstream&);
 };

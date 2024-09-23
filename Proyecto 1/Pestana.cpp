@@ -84,9 +84,12 @@ void Pestana::serializarPestana(std::ofstream& archivo){
     archivo.write(reinterpret_cast<const char*>(&incognito), sizeof(incognito));
     archivo.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
+    size_t tam = sitios->size();
+    archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+
     for (const auto& sitio : *sitios) {
         std::string url = sitio->getUrl();
-        size_t tam = url.size();
+        tam = url.size();
         archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
         archivo.write(url.c_str(), tam); 
     }

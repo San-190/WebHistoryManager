@@ -13,7 +13,7 @@ void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "Digite la opción: ";
 }
 
-void Interfaz::mostrarMensajeFinal(){
+void Interfaz::mostrarMensajeFinal() {
 	std::cout << "\n\nCerrando el NAVEGAROAR\n\n";
 }
 
@@ -99,7 +99,7 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 	}
 }
 
-int Interfaz::submenuSitio(Navegador& nav){
+int Interfaz::submenuSitio(Navegador& nav) {
 	if (nav.getSitioActual()) {
 		system("cls");
 		mostrarSitio(nav);
@@ -116,6 +116,7 @@ int Interfaz::submenuSitio(Navegador& nav){
 		system("pause");
 		return 3;
 	}
+
 }
 
 Navegador* Interfaz::crearNavegador() {
@@ -141,7 +142,7 @@ void Interfaz::irASitioWeb(Navegador& nav) {
 	}
 }
 
-void Interfaz::agregarMarcador(Navegador& nav){
+void Interfaz::agregarMarcador(Navegador& nav) {
 	nav.agregarQuitarBookmark();
 }
 
@@ -180,11 +181,11 @@ void Interfaz::quitarTag(Navegador& nav)
 	}
 }
 
-void Interfaz::crearNuevaPestana(Navegador& nav){
+void Interfaz::crearNuevaPestana(Navegador& nav) {
 	nav.agregarPestana(*(new Pestana));
 }
 
-void Interfaz::cambiarModoIncognito(Navegador& nav){
+void Interfaz::cambiarModoIncognito(Navegador& nav) {
 	nav.cambiarModoIncognito();
 }
 
@@ -242,34 +243,61 @@ int Interfaz::revisaInt() {
 void Interfaz::mostrarPagina(Navegador& nav) {
 	std::cout << nav.mostrarPestana();
 }
-void Interfaz::mensajeFueraDeRango(){
+void Interfaz::mensajeFueraDeRango() {
 	std::cout << "\nLa opción digitada está fuera de rango\n\n";
 	system("pause");
 }
-void Interfaz::serializar(Navegador& nav){
-	std::cout << "Ingrese el nombre del archivo de guardado (sin extensión): ";
+void Interfaz::serializar(Navegador& nav) {
+	std::cout << "Ingrese el nombre de la sesión a guardar (sin extensión): ";
 	std::string nombre = revisarString();
-	std::ofstream archivo(nombre+".dat", std::ios::binary);
+	std::ofstream archivo(nombre + ".dat", std::ios::binary);
 
 	if (archivo.fail())
 		std::cout << "No se puede abrir el archivo\n\n";
 	else {
 		nav.serializarNavegador(archivo);
 		archivo.close();
+		std::cout << "Sesión " << nombre << " guardada correctamente.\n\n";
+		system("pause");
 	}
 }
 
-void Interfaz::deserializar(Navegador& nav){
-	std::cout << "Ingrese el nombre del archivo de lectura (sin extensión): ";
-	std::string nombre = revisarString();
-	std::ifstream archivo(nombre + ".dat", std::ios::binary);
+int Interfaz::menuArchivos() {
+	system("cls");
+	std::cout << "--------- NAVEGADOR ---------\n\n";
+	std::cout << "1) Guardar la sesión\n";
+	std::cout << "2) Cargar la sesión\n";
+	std::cout << "3) Regresar\n\n";
+	std::cout << "Digite la opción: ";
+	return revisaInt();
+}
 
-	if (archivo.fail())
-		std::cout << "No se ha encontrado la sesión\n\n";
-	else {
-		nav.deserializarNavegador(archivo);
-		archivo.close();
+void Interfaz::deserializar(Navegador& nav) {
+	int i = 0;
+	std::cout << "¿Seguro que desea cambiar de sesión? Se perderá la sesión actual.\n";
+	std::cout << "Digite (1) para confirmar o (2) para cancelar.\n";
+	do {
+		i = revisaInt();
+		if (i != 1 && i != 2)
+			std::cout << "---> La opción debe ser 1 o 2.\n";
+	} while (i != 1 && i != 2);
+
+	if (i == 1) {
+		std::cout << "Ingrese el nombre de la sesión a cargar (sin extensión): ";
+		std::string nombre = revisarString();
+		std::ifstream archivo(nombre + ".dat", std::ios::binary);
+
+		if (archivo.fail())
+			std::cout << "No se ha encontrado la sesión\n\n";
+		else {
+			nav.deserializarNavegador(archivo);
+			archivo.close();
+			std::cout << "Sesión cargada correctamente.\n\n";
+		}
 	}
+
+
+
 }
 
 /*

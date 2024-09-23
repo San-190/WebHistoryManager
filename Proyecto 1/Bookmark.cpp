@@ -13,6 +13,10 @@ Bookmark::~Bookmark(){
     }
 }
 
+std::vector<std::string*>* Bookmark::getTags(){
+    return tags;
+}
+
 bool Bookmark::existe(std::string& tag){
     for (auto t : *tags) {
         if (*t == tag)
@@ -42,13 +46,23 @@ bool Bookmark::eliminarTag(std::string& tag){
     return false;
 }
 
+void Bookmark::serializarBookmark(std::ofstream& archivo){
+    size_t tam = tags->size();
+    archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+
+    for (auto tag : *tags) {
+        tam = tag->size();
+        archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+        archivo.write(tag->c_str(), tam);
+    }
+}
+
 std::string Bookmark::toString(){
     std::stringstream s;
     if (!tags->empty()) {
         s << "Tags: ";
-        for (auto i : *tags) {
+        for (auto i : *tags)
             s << '#' << *i << ' ';
-        }
     }
     return s.str();
 }
