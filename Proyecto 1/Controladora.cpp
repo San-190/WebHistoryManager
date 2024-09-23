@@ -31,7 +31,7 @@ void Controladora::principalControl2() { sitiosControl0(); }
 void Controladora::principalControl3() { Interfaz::crearNuevaPestana(*navegador); }
 void Controladora::principalControl4() {}
 void Controladora::principalControl5() { Interfaz::cambiarModoIncognito(*navegador); }
-void Controladora::principalControl6() {}
+void Controladora::principalControl6() { archivosControl0(); }
 void Controladora::principalControl7() {}
 void Controladora::principalControl8() { Interfaz::mostrarMensajeFinal(); }
 int Controladora::controlSubmenuSitio() { return Interfaz::submenuSitio(*navegador); }
@@ -52,3 +52,18 @@ void Controladora::sitiosControl0() {
 void Controladora::sitiosControl1() { Interfaz::agregarMarcador(*navegador); }
 void Controladora::sitiosControl2() { Interfaz::agregarTag(*navegador); }
 void Controladora::sitiosControl3() { Interfaz::quitarTag(*navegador); }
+int Controladora::controlSubMenuArhivos(){ return Interfaz::menuArchivos(); }
+void Controladora::archivosControl0() {
+	int op;
+	do {
+		op = controlSubMenuArhivos();
+		switch (op) {
+		case 1: archivosControl1(); break;
+		case 2: archivosControl2(); break;
+		case 3: break;
+		default: controlInvalido();
+		}
+	} while (op > 4 || op < 1);
+}
+void Controladora::archivosControl1() { Interfaz::serializar(*navegador); }
+void Controladora::archivosControl2() { Interfaz::deserializar(*navegador); }

@@ -25,4 +25,8 @@ public:
 	void sitiosControl2();
 	void sitiosControl3();
 
+	int controlSubMenuArhivos();
+	void archivosControl0();
+	void archivosControl1();
+	void archivosControl2();
 };

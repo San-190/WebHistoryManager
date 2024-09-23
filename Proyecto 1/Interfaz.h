@@ -25,5 +25,6 @@ public:
 	static void mostrarPagina(Navegador&);
 	static void mensajeFueraDeRango();
 	static void serializar(Navegador& nav);
+	static int menuArchivos();
 	static void deserializar(Navegador& nav);
 };
