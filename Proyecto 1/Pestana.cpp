@@ -13,7 +13,7 @@ Pestana::~Pestana() {
     delete sitios;
 }
 
-int Pestana::getNumero() const { return numero; }
+int Pestana::getNumero() const { return id; }
 
 bool Pestana::getIncognito(){
     return incognito;

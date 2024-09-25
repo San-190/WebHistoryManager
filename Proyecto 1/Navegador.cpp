@@ -21,24 +21,29 @@ Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)
 Navegador::~Navegador() {
     eliminaTodo();
     if (sitios) {
-        for (auto p : *sitios) {
+        for (auto p : *sitios)
             delete p;
-        }
         delete sitios;
     }
+    if(pestanas)
+        delete pestanas;
+    if (bookmarks)
+        delete bookmarks;
+    if (configuracion)
+        delete configuracion;
 }
 
 void Navegador::eliminaTodo() {
-    if (configuracion)
-        delete configuracion;
     if (pestanas) {
-        for (auto p : *pestanas) {
+        for (auto p : *pestanas)
             delete p;
-        }
-        delete pestanas;
+        pestanas->clear();
+        Pestana::numero = 1;
     }
     if (bookmarks) {
-        delete bookmarks;
+        for (auto b : *bookmarks)
+            b->quitarBookmark();
+        bookmarks->clear();
     }
 }
 
@@ -206,6 +211,10 @@ Sitio* Navegador::getSitioActual(){
     return (*iterador)->getSitioActual();
 }
 
+Pestana* Navegador::getPestanaActual() {
+    return (*iterador);
+}
+
 void Navegador::serializarNavegador(std::ofstream& archivo) {
     archivo.write(reinterpret_cast<const char*>(&privado), sizeof(privado));
     if (privado) {
@@ -219,10 +228,13 @@ void Navegador::serializarNavegador(std::ofstream& archivo) {
     for (auto pestana : *pestanas)
         pestana->serializarPestana(archivo);
 
+    tam = bookmarks->size();
+    archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
     for (auto sitio : *bookmarks) {
         std::string url = sitio->getUrl();
         tam = url.size();
         archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+        // c_str() convierte el string a un const char* para serializarlo
         archivo.write(url.c_str(), tam);
 
         Bookmark* bookmark = sitio->getBookmark();
@@ -263,6 +275,7 @@ void Navegador::deserializarNavegador(std::ifstream& archivo) {
     }
 
     configuracion->deserializarConfiguracion(archivo);
+    iterador = pestanas->begin();
 }
 
 void Navegador::deserializarPestana(std::ifstream& archivo, int num) {
@@ -280,7 +293,7 @@ void Navegador::deserializarPestana(std::ifstream& archivo, int num) {
         pestana->setNumero(id);
 
         size_t can=0;
-        archivo.read(reinterpret_cast<char*>(can), sizeof(can));
+        archivo.read(reinterpret_cast<char*>(&can), sizeof(can));
 
         for (size_t i = 1; i <= can; ++i) {
             size_t caracteres;
@@ -290,7 +303,7 @@ void Navegador::deserializarPestana(std::ifstream& archivo, int num) {
             archivo.read(&url[0], caracteres);
 
             Sitio* sitio = buscarSitio(url);
-            sitios->push_back(sitio);
+            pestana->agregarSitio(*sitio);
         }
 
         pestanas->push_back(pestana);

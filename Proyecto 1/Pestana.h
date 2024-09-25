@@ -17,7 +17,7 @@ public:
     ~Pestana();
 
     int getNumero() const;
-    void setNumero(int num) { numero = num; }
+    void setNumero(int num) { id = num; }
     bool getIncognito();
     void setIncognito(bool);
 

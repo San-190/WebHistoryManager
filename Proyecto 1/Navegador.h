@@ -40,6 +40,7 @@ public:
     void activarModoIncognito();
     void desactivarModoIncognito();
     Sitio* getSitioActual();
+    Pestana* getPestanaActual();
 
     void serializarNavegador(std::ofstream&);
     void deserializarNavegador(std::ifstream&);
