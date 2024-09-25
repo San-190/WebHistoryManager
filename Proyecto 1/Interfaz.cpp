@@ -17,8 +17,7 @@ void Interfaz::mostrarMensajeFinal() {
 	std::cout << "\n\nCerrando el NAVEGAROAR\n\n";
 }
 
-void Interfaz::mostrarSitio(Navegador& nav)
-{
+void Interfaz::mostrarSitio(Navegador& nav){
 	Sitio* sitio = nav.getSitioActual();
 	Bookmark* book;
 	if (sitio) {
@@ -100,23 +99,30 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 }
 
 int Interfaz::submenuSitio(Navegador& nav) {
-	if (nav.getSitioActual()) {
-		system("cls");
-		mostrarSitio(nav);
-		std::cout << "--------- NAVEGAROAR ---------\n\n";
-		std::cout << "1) Agregar / Quitar bookmark\n";
-		std::cout << "2) Agregar Tag\n";
-		std::cout << "3) Eliminar Tag\n";
-		std::cout << "4) Volver\n\n";
-		std::cout << "Digite la opción: ";
-		return revisaInt();
+	if (!nav.getSitioActual()){
+		std::cout << "\n\nDebe ingresar a un sitio para editar.\n\n";
+		system("pause");
+		return 4;
 	}
 	else {
-		std::cout << "Debe ingresar a un sitio para editar.\n\n";
-		system("pause");
-		return 3;
+		Pestana* pestana = nav.getPestanaActual();
+		if (pestana->getIncognito()) {
+			std::cout << "\n\nNo puede editar un sitio desde una pestaña incógnita.\n\n";
+			system("pause");
+			return 4;
+		}
+		else {
+			system("cls");
+			mostrarSitio(nav);
+			std::cout << "--------- NAVEGAROAR ---------\n\n";
+			std::cout << "1) Agregar / Quitar bookmark\n";
+			std::cout << "2) Agregar Tag\n";
+			std::cout << "3) Eliminar Tag\n";
+			std::cout << "4) Volver\n\n";
+			std::cout << "Digite la opción: ";
+			return revisaInt();
+		}
 	}
-
 }
 
 Navegador* Interfaz::crearNavegador() {
@@ -264,7 +270,7 @@ void Interfaz::serializar(Navegador& nav) {
 
 int Interfaz::menuArchivos() {
 	system("cls");
-	std::cout << "--------- NAVEGADOR ---------\n\n";
+	std::cout << "--------- NAVEGAROAR ---------\n\n";
 	std::cout << "1) Guardar la sesión\n";
 	std::cout << "2) Cargar la sesión\n";
 	std::cout << "3) Regresar\n\n";
@@ -287,17 +293,16 @@ void Interfaz::deserializar(Navegador& nav) {
 		std::string nombre = revisarString();
 		std::ifstream archivo(nombre + ".dat", std::ios::binary);
 
-		if (archivo.fail())
+		if (archivo.fail()) {
 			std::cout << "No se ha encontrado la sesión\n\n";
+			system("pause");
+		}
 		else {
 			nav.deserializarNavegador(archivo);
 			archivo.close();
 			std::cout << "Sesión cargada correctamente.\n\n";
 		}
 	}
-
-
-
 }
 
 /*
