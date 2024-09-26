@@ -322,11 +322,37 @@ void Interfaz::deserializar(Navegador& nav) {
 	}
 }
 
-void Interfaz::verBookmarks(Navegador& nav) {
-	system("cls");
-	std::cout << "--------- BOOKMARKS ---------\n";
-	std::cout << nav.mostrarBookmarks() << '\n';
-	system("pause");
+void Interfaz::buscarPorUrl(Navegador& nav) {
+	std::string url;
+	std::cout << "\n\nEscriba el URL a buscar: ";
+	url = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorUrl(url);
+	mostrarSitiosEncontrados(*filtrado);
+	delete filtrado;
+}
+
+void Interfaz::buscarPorTitulo(Navegador& nav) {
+	std::string titulo;
+	std::cout << "\n\nEscriba el título a buscar: ";
+	titulo = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorTitulo(titulo);
+	mostrarSitiosEncontrados(*filtrado);
+	delete filtrado;
+}
+
+void Interfaz::buscarPorTags(Navegador& nav) {
+	std::string tag;
+	std::cout << "\n\nEscriba el tag a buscar: ";
+	tag = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorTags(tag);
+	mostrarSitiosEncontrados(*filtrado);
+	delete filtrado;
+}
+
+void Interfaz::buscarPorBookmarks(Navegador& nav) {
+	Navegador* filtrado = nav.navegadorFiltradoPorBookmark();
+	mostrarSitiosEncontrados(*filtrado);
+	delete filtrado;
 }
 
 void Interfaz::filtrarPorUrl(Navegador& nav) {
@@ -334,22 +360,81 @@ void Interfaz::filtrarPorUrl(Navegador& nav) {
 	std::cout << "\n\nEscriba el filtro para los URLs: ";
 	url = revisarString();
 	Navegador* filtrado = nav.navegadorFiltradoPorUrl(url);
-	navegarFiltros(*filtrado);
+	if (filtrado->existenPestanas())
+		navegarFiltros(*filtrado);
+	else {
+		std::cout << "\n---> No se encontraron coincidencias.\n\n";
+		system("pause");
+	}
 	delete filtrado;
 }
 
-int Interfaz::navegarFiltros(Navegador& nav) {
+void Interfaz::filtrarPorTitulo(Navegador& nav) {
+	std::string titulo;
+	std::cout << "\n\nEscriba el filtro para los títulos: ";
+	titulo = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorTitulo(titulo);
+	if (filtrado->existenPestanas())
+		navegarFiltros(*filtrado);
+	else {
+		std::cout << "\n---> No se encontraron coincidencias.\n\n";
+		system("pause");
+	}
+	delete filtrado;
+}
+
+void Interfaz::filtrarPorTags(Navegador& nav) {
+	std::string tag;
+	std::cout << "\n\nEscriba el filtro para los tags: ";
+	tag = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorTags(tag);
+	if (filtrado->existenPestanas())
+		navegarFiltros(*filtrado);
+	else {
+		std::cout << "\n---> No se encontraron coincidencias.\n\n";
+		system("pause");
+	}
+	delete filtrado;
+}
+
+void Interfaz::filtrarPorBookmarks(Navegador& nav){
+	Navegador* filtrado = nav.navegadorFiltradoPorBookmark();
+	if (filtrado->existenPestanas())
+		navegarFiltros(*filtrado);
+	else {
+		std::cout << "\n---> No se encontraron coincidencias.\n\n";
+		system("pause");
+	}
+	delete filtrado;
+}
+
+void Interfaz::mostrarSitiosEncontrados(Navegador& nav) {
 	system("cls");
+	std::cout << "-----Coincidencias Encontradas-----\n";
+	if (nav.existenPestanas())
+		std::cout << nav.toString() << '\n';
+	else
+		std::cout << "---> No se encontraron coincidencias.\n\n";
+	system("pause");
+}
+
+void Interfaz::mostrarSitiosFiltrados(Navegador& nav) {
+	system("cls");
+	std::cout << "--------Navegador Filtrado--------\n\n";
 	mostrarPagina(nav);
+	std::cout << "\n---> Utilice las flechas para moverse entre pestañas y sitios\n";
+	std::cout << "---> Presione ESC para quitar el filtro\n\n";
+}
+
+int Interfaz::navegarFiltros(Navegador& nav) {
+	mostrarSitiosFiltrados(nav);
 	while (true) {
 		if (GetAsyncKeyState(VK_UP) & 0x8000) {
 			if (!nav.moverPestanaSiguiente()) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(nav);
-			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			mostrarSitiosFiltrados(nav);
 			Sleep(200);
 		}
 
@@ -358,9 +443,7 @@ int Interfaz::navegarFiltros(Navegador& nav) {
 				std::cout << "\nNo hay pestañas anteriores\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(nav);
-			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			mostrarSitiosFiltrados(nav);
 			Sleep(200);
 		}
 
@@ -369,9 +452,7 @@ int Interfaz::navegarFiltros(Navegador& nav) {
 				std::cout << "\nNo hay sitios anteriores\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(nav);
-			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			mostrarSitiosFiltrados(nav);
 			Sleep(200);
 		}
 
@@ -380,12 +461,9 @@ int Interfaz::navegarFiltros(Navegador& nav) {
 				std::cout << "\nNo hay sitios siguientes\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(nav);
-			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			mostrarSitiosFiltrados(nav);
 			Sleep(200);
 		}
-
 		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
 
 		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)

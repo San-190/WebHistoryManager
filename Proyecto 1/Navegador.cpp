@@ -23,15 +23,100 @@ void Navegador::inicializarNavegador() {
 
 Navegador* Navegador::navegadorFiltradoPorUrl(std::string buscado) {
     Navegador* filtrado = new Navegador();
+    bool bandera = false;
+    int i = 1;
     for (auto p : *pestanas) {
         Pestana* pestana = new Pestana();
-
+        pestana->setNumero(i++);
         for (auto s : *(p)->getSitios()) {
             std::string url = s->getUrl();
-            if (url.find(buscado) != std::string::npos)
+            // find retorna la posición de la primera ocurrencia de la subcadena en la cadena.
+            // npos es un valor especial que indica que la subcadena no fue encontrada.
+            if (url.find(buscado) != std::string::npos) {
                 pestana->agregarSitio(*s);
+                bandera = true;
+            }
         }
-        filtrado->agregarPestana(*pestana);
+        if (bandera) {
+            filtrado->agregarPestana(*pestana);
+            bandera = false;
+        }
+        else
+            delete pestana;
+    }
+    return filtrado;
+}
+
+Navegador* Navegador::navegadorFiltradoPorTitulo(std::string buscado) {
+    Navegador* filtrado = new Navegador();
+    bool bandera = false;
+    int i = 1;
+    for (auto p : *pestanas) {
+        Pestana* pestana = new Pestana();
+        pestana->setNumero(i++);
+        for (auto s : *(p)->getSitios()) {
+            std::string titulo = s->getTitulo();
+            if (titulo.find(buscado) != std::string::npos) {
+                pestana->agregarSitio(*s);
+                bandera = true;
+            }
+        }
+        if (bandera) {
+            filtrado->agregarPestana(*pestana);
+            bandera = false;
+        }
+        else
+            delete pestana;
+    }
+    return filtrado;
+}
+
+Navegador* Navegador::navegadorFiltradoPorTags(std::string buscado) {
+    Navegador* filtrado = new Navegador();
+    bool bandera = false;
+    int i = 1;
+    for (auto p : *pestanas) {
+        Pestana* pestana = new Pestana();
+        pestana->setNumero(i++);
+        for (auto s : *(p)->getSitios()) {
+            Bookmark* bookmark = s->getBookmark();
+            if (bookmark) {
+                for (auto t : *(bookmark)->getTags()) {
+                    if ((*t).find(buscado) != std::string::npos) {
+                        pestana->agregarSitio(*s);
+                        bandera = true;
+                    }
+                }
+            }
+        }
+        if (bandera) {
+            filtrado->agregarPestana(*pestana);
+            bandera = false;
+        }
+        else
+            delete pestana;
+    }
+    return filtrado;
+}
+
+Navegador* Navegador::navegadorFiltradoPorBookmark() {
+    Navegador* filtrado = new Navegador();
+    bool bandera = false;
+    int i = 1;
+    for (auto p : *pestanas) {
+        Pestana* pestana = new Pestana();
+        pestana->setNumero(i++);
+        for (auto s : *(p)->getSitios())
+            if (s->getBookmark()) {
+                pestana->agregarSitio(*s);
+                bandera = true;
+            }
+        if (bandera) {
+            filtrado->agregarPestana(*pestana);
+            bandera = false;
+        }
+        else
+            delete pestana;
     }
     return filtrado;
 }
@@ -237,6 +322,12 @@ Pestana* Navegador::getPestanaActual() {
     return (*iterador);
 }
 
+bool Navegador::existenPestanas() {
+    if (pestanas)
+        return !pestanas->empty();
+    return false;
+}
+
 std::string Navegador::mostrarBookmarks() {
     std::stringstream s;
     if (bookmarks && !bookmarks->empty())
@@ -244,6 +335,16 @@ std::string Navegador::mostrarBookmarks() {
             s << b->toString();
     else
         s << "Actualmente no hay bookamrks.\n";
+    return s.str();
+}
+
+std::string Navegador::toString() {
+    std::stringstream s;
+    for (auto p : *pestanas) {
+        s << "\n---> Pestaña #" << p->getNumero() << '\n';
+        for (auto sit : *p->getSitios())
+            s << sit->toString();
+    }
     return s.str();
 }
 
@@ -360,7 +461,6 @@ void Navegador::deserializarBookmark(std::ifstream& archivo, Bookmark& bookmark)
     }
 }
 
-
 /*
 Recursos utilizados
 
@@ -369,4 +469,8 @@ https://www.geeksforgeeks.org/upper_bound-and-lower_bound-for-vector-in-cpp-stl/
 
 Definición y uso de funciones lambdas:
 https://learn.microsoft.com/en-us/cpp/cpp/lambda-expressions-in-cpp?view=msvc-170
+
+Uso de las funciones find() y npos():
+https://www.geeksforgeeks.org/stringnpos-in-c-with-examples/
+https://www.geeksforgeeks.org/string-find-in-cpp/
 */

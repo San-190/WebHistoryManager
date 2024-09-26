@@ -40,5 +40,4 @@ public:
 	void busquedaYFiltrosControl6();
 	void busquedaYFiltrosControl7();
 	void busquedaYFiltrosControl8();
-	void busquedaYFiltrosControl9();
 };

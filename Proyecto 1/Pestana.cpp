@@ -42,7 +42,7 @@ void Pestana::agregarSitio(Sitio& sitio) {
 
 std::string Pestana::mostrarPestana() {
     std::stringstream s;
-    s << "    Pestaña #" << id;
+    s << "       Pestaña #" << id;
     if (incognito)
         s << " (Incógnita)";
     if (sitios->empty())

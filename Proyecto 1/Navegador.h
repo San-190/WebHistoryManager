@@ -18,7 +18,10 @@ public:
     Navegador();
     Navegador(const Configuracion&);
     void inicializarNavegador();
-    Navegador* navegadorFiltradoPorUrl(std::string buscado);
+    Navegador* navegadorFiltradoPorUrl(std::string);
+    Navegador* navegadorFiltradoPorTitulo(std::string);
+    Navegador* navegadorFiltradoPorTags(std::string);
+    Navegador* navegadorFiltradoPorBookmark();
     ~Navegador();
     void eliminaTodo();
 
@@ -44,7 +47,9 @@ public:
     Sitio* getSitioActual();
     Pestana* getPestanaActual();
 
+    bool existenPestanas();
     std::string mostrarBookmarks();
+    std::string toString();
 
     void serializarNavegador(std::ofstream&);
     void deserializarNavegador(std::ifstream&);
