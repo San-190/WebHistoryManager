@@ -1,36 +1,40 @@
 #include "Sitio.h"
 
-Sitio::Sitio(std::string u , std::string t)
-    :url(u) , titulo(t) {}
+Sitio::Sitio(std::string u, std::string d, std::string t)
+    :url(u), dominio(d), titulo(t), bookmark(nullptr) {}
 
 Sitio::~Sitio() {
-    if(bookmark)
+    if (bookmark)
         delete bookmark;
 }
 
-std::string Sitio::getUrl() const { return url; }
+std::string Sitio::getUrl() { return url; }
 
-std::string Sitio::getTitulo() const { return titulo; }
+std::string Sitio::getTitulo() { return titulo; }
 
-Bookmark* Sitio::getBookmark(){ return bookmark; }
+std::string Sitio::getDominio() { return dominio; }
+
+Bookmark* Sitio::getBookmark() { return bookmark; }
 
 
-void Sitio::setUrl(const std::string& u) { url = u; }
+void Sitio::setUrl(std::string& u) { url = u; }
 
-void Sitio::setTitulo(const std::string& t) { titulo = t; }
+void Sitio::setTitulo(std::string& t) { titulo = t; }
 
-void Sitio::setBookmark(Bookmark& book){
+void Sitio::setDominio(std::string d) { dominio = d; }
+
+void Sitio::setBookmark(Bookmark& book) {
     bookmark = &book;
 }
 
-bool Sitio::agregarTag(std::string& s){
+bool Sitio::agregarTag(std::string& s) {
     if (bookmark) {
         return bookmark->agregarTag(s);
     }
     return false;
 }
 
-bool Sitio::quitarTag(std::string& s){
+bool Sitio::quitarTag(std::string& s) {
     if (bookmark) {
         return bookmark->eliminarTag(s);
     }
@@ -47,11 +51,11 @@ std::string Sitio::toString() {
     return s.str();
 }
 
-void Sitio::quitarBookmark(){
+void Sitio::quitarBookmark() {
     delete bookmark;
     bookmark = nullptr;
 }
 
-bool Sitio::operator<(const Sitio& sitio) const{
+bool Sitio::operator<(const Sitio& sitio) const {
     return url < sitio.url;
 }

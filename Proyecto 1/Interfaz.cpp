@@ -127,6 +127,7 @@ int Interfaz::submenuSitio(Navegador& nav) {
 
 Navegador* Interfaz::crearNavegador() {
 	Navegador* nav = new Navegador();
+	nav->inicializarNavegador();
 	std::ifstream archivo("Sitios Web.csv");
 	if (!archivo.fail()) {
 		nav->leerSitios(archivo);
@@ -268,12 +269,28 @@ void Interfaz::serializar(Navegador& nav) {
 	}
 }
 
-int Interfaz::menuArchivos() {
+int Interfaz::submenuArchivos() {
 	system("cls");
 	std::cout << "--------- NAVEGAROAR ---------\n\n";
 	std::cout << "1) Guardar la sesión\n";
 	std::cout << "2) Cargar la sesión\n";
-	std::cout << "3) Regresar\n\n";
+	std::cout << "3) Volver\n\n";
+	std::cout << "Digite la opción: ";
+	return revisaInt();
+}
+
+int Interfaz::submenuBusquedaYFiltros() {
+	system("cls");
+	std::cout << "--------- NAVEGAROAR ---------\n\n";
+	std::cout << "1) Búsqueda por URL\n";
+	std::cout << "2) Búsqueda por título\n";
+	std::cout << "3) Búsqueda por tag\n";
+	std::cout << "4) Ver bookmarks\n";
+	std::cout << "5) Filtrar por URL\n";
+	std::cout << "6) Filtrar por título\n";
+	std::cout << "7) Filtrar por tag\n";
+	std::cout << "8) Filtrar por bookmarks\n";
+	std::cout << "9) Volver\n\n";
 	std::cout << "Digite la opción: ";
 	return revisaInt();
 }
@@ -302,6 +319,77 @@ void Interfaz::deserializar(Navegador& nav) {
 			archivo.close();
 			std::cout << "Sesión cargada correctamente.\n\n";
 		}
+	}
+}
+
+void Interfaz::verBookmarks(Navegador& nav) {
+	system("cls");
+	std::cout << "--------- BOOKMARKS ---------\n";
+	std::cout << nav.mostrarBookmarks() << '\n';
+	system("pause");
+}
+
+void Interfaz::filtrarPorUrl(Navegador& nav) {
+	std::string url;
+	std::cout << "\n\nEscriba el filtro para los URLs: ";
+	url = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorUrl(url);
+	navegarFiltros(*filtrado);
+	delete filtrado;
+}
+
+int Interfaz::navegarFiltros(Navegador& nav) {
+	system("cls");
+	mostrarPagina(nav);
+	while (true) {
+		if (GetAsyncKeyState(VK_UP) & 0x8000) {
+			if (!nav.moverPestanaSiguiente()) {
+				std::cout << "\nNo hay pestañas siguientes\n\n";
+				system("pause");
+			}
+			system("cls");
+			mostrarPagina(nav);
+			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			Sleep(200);
+		}
+
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+			if (!nav.moverPestanaAnterior()) {
+				std::cout << "\nNo hay pestañas anteriores\n\n";
+				system("pause");
+			}
+			system("cls");
+			mostrarPagina(nav);
+			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			Sleep(200);
+		}
+
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+			if (!nav.moverSitioAnterior()) {
+				std::cout << "\nNo hay sitios anteriores\n\n";
+				system("pause");
+			}
+			system("cls");
+			mostrarPagina(nav);
+			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			Sleep(200);
+		}
+
+		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+			if (!nav.moverSitioSiguiente()) {
+				std::cout << "\nNo hay sitios siguientes\n\n";
+				system("pause");
+			}
+			system("cls");
+			mostrarPagina(nav);
+			std::cout << "\n\nPresione ESC para quitar el filtro\n\n";
+			Sleep(200);
+		}
+
+		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
+
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+			return 9;
 	}
 }
 

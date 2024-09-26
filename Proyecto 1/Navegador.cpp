@@ -1,6 +1,13 @@
 #include "Navegador.h"
 
-Navegador::Navegador(): configuracion(new Configuracion(10,600)){
+Navegador::Navegador() : configuracion(new Configuracion(10, 600)) {
+    privado = false;
+    pestanas = new std::list<Pestana*>;
+    sitios = new std::vector<Sitio*>;
+    bookmarks = new std::list<Sitio*>;
+}
+
+Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)&conf) {
     privado = false;
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
@@ -9,13 +16,24 @@ Navegador::Navegador(): configuracion(new Configuracion(10,600)){
     iterador = pestanas->begin();
 }
 
-Navegador::Navegador(const Configuracion& conf) : configuracion((Configuracion*)& conf) {
-    privado = false;
-    pestanas = new std::list<Pestana*>;
-    sitios = new std::vector<Sitio*>;
-    bookmarks = new std::list<Sitio*>;
-    pestanas->push_back(new Pestana);
+void Navegador::inicializarNavegador() {
+    pestanas->push_back(new Pestana());
     iterador = pestanas->begin();
+}
+
+Navegador* Navegador::navegadorFiltradoPorUrl(std::string buscado) {
+    Navegador* filtrado = new Navegador();
+    for (auto p : *pestanas) {
+        Pestana* pestana = new Pestana();
+
+        for (auto s : *(p)->getSitios()) {
+            std::string url = s->getUrl();
+            if (url.find(buscado) != std::string::npos)
+                pestana->agregarSitio(*s);
+        }
+        filtrado->agregarPestana(*pestana);
+    }
+    return filtrado;
 }
 
 Navegador::~Navegador() {
@@ -25,7 +43,7 @@ Navegador::~Navegador() {
             delete p;
         delete sitios;
     }
-    if(pestanas)
+    if (pestanas)
         delete pestanas;
     if (bookmarks)
         delete bookmarks;
@@ -35,10 +53,11 @@ Navegador::~Navegador() {
 
 void Navegador::eliminaTodo() {
     if (pestanas) {
-        for (auto p : *pestanas)
+        for (auto p : *pestanas) {
+            Pestana::numero--;
             delete p;
+        }
         pestanas->clear();
-        Pestana::numero = 1;
     }
     if (bookmarks) {
         for (auto b : *bookmarks)
@@ -54,12 +73,12 @@ void Navegador::agregarPestana(Pestana& p) {
     iterador = --pestanas->end();
 }
 
-void Navegador::agregarSitioAPestana(Sitio& sitio){
+void Navegador::agregarSitioAPestana(Sitio& sitio) {
     (*iterador)->agregarSitio(sitio);
 }
 
-void Navegador::agregarSitio(const Sitio& p) {
-    sitios->push_back((Sitio*)&p);  
+void Navegador::agregarSitio(Sitio& p) {
+    sitios->push_back((Sitio*)&p);
 }
 
 void Navegador::agregarQuitarBookmark() {
@@ -76,8 +95,8 @@ void Navegador::agregarQuitarBookmark() {
     }
 }
 
-bool Navegador::agregarTag(std::string& s){
-    Sitio* sitio= getSitioActual();
+bool Navegador::agregarTag(std::string& s) {
+    Sitio* sitio = getSitioActual();
     return sitio->agregarTag(s);
 }
 
@@ -91,9 +110,9 @@ Sitio* Navegador::buscarSitio(std::string url) {
     Sitio* sitio = new Sitio();
     sitio->setUrl(url);
 
-    auto it = std::lower_bound(sitios->begin(), sitios->end(), sitio,[](const Sitio* a, const Sitio* b) {
+    auto it = std::lower_bound(sitios->begin(), sitios->end(), sitio, [](const Sitio* a, const Sitio* b) {
         return *a < *b;
-    });
+        });
 
     delete sitio;
 
@@ -106,7 +125,7 @@ Sitio* Navegador::buscarSitio(std::string url) {
 void Navegador::leerSitios(std::ifstream& archivo) {
     const size_t tam = 2048;
     char buffer[tam];
-    std::string url, titulo, atributo;
+    std::string url = "", dominio = "", titulo = "", atributo = "";
 
     while (archivo.read(buffer, tam) || archivo.gcount() > 0) {
         size_t bytes = archivo.gcount();
@@ -114,19 +133,22 @@ void Navegador::leerSitios(std::ifstream& archivo) {
             char c = buffer[i];
 
             if (c == ',') {
-                url = atributo;
-                atributo.clear();
+                if (url == "")
+                    url = atributo;
+                else
+                    dominio = atributo;
+                atributo = "";
             }
             else if (c == '\n') {
                 titulo = atributo;
-                sitios->push_back(new Sitio(url, titulo));  
-                url.clear();
-                titulo.clear();
-                atributo.clear();
+                sitios->push_back(new Sitio(url, dominio, titulo));
+                url = "";
+                dominio = "";
+                titulo = "";
+                atributo = "";
             }
-            else {
-                atributo += c; 
-            }
+            else
+                atributo += c;
         }
     }
     std::sort(sitios->begin(), sitios->end(), [](const Sitio* a, const Sitio* b) {
@@ -134,63 +156,63 @@ void Navegador::leerSitios(std::ifstream& archivo) {
         });
 }
 
-std::string Navegador::mostrarPestana(){
+std::string Navegador::mostrarPestana() {
     std::string s = "";
     if (privado)
         s = "   Modo Incognito Activado\n\n";
-    if (*iterador != nullptr){
+    if (*iterador != nullptr) {
         return s + (*iterador)->mostrarPestana();
     }
-    return "No hay pestañas\n";
+    return "No hay pestaÃ±as\n";
 }
 
-bool Navegador::moverPestanaAnterior(){
+bool Navegador::moverPestanaAnterior() {
     if (pestanas->empty())
         return false;
 
     if (iterador != pestanas->begin()) {
-        iterador--; 
+        iterador--;
         return true;
     }
     else
         return false;
 }
 
-bool Navegador::moverPestanaSiguiente(){
+bool Navegador::moverPestanaSiguiente() {
     if (pestanas->empty())
         return false;
 
     iterador++;
     if (iterador != pestanas->end())
         return true;
-    else{
+    else {
         iterador--;
         return false;
     }
 }
 
-bool Navegador::moverSitioAnterior(){
+bool Navegador::moverSitioAnterior() {
     return (*iterador)->moverSitioAnterior();
 }
 
-bool Navegador::moverSitioSiguiente(){
+bool Navegador::moverSitioSiguiente() {
     return (*iterador)->moverSitioSiguiente();
 }
 
-void Navegador::cambiarModoIncognito(){
+void Navegador::cambiarModoIncognito() {
     if (privado)
         desactivarModoIncognito();
     else
         activarModoIncognito();
 }
 
-void Navegador::activarModoIncognito(){
+void Navegador::activarModoIncognito() {
     privado = true;
     agregarPestana(*new Pestana);
     incognito = iterador;
 }
 
-void Navegador::desactivarModoIncognito(){
+void Navegador::desactivarModoIncognito() {
     bool bandera = false;
     privado = false;
     Pestana* aux = nullptr;
@@ -207,12 +229,22 @@ void Navegador::desactivarModoIncognito(){
         iterador = --pestanas->end();
 }
 
-Sitio* Navegador::getSitioActual(){
+Sitio* Navegador::getSitioActual() {
     return (*iterador)->getSitioActual();
 }
 
 Pestana* Navegador::getPestanaActual() {
     return (*iterador);
+}
+
+std::string Navegador::mostrarBookmarks() {
+    std::stringstream s;
+    if (bookmarks && !bookmarks->empty())
+        for (auto b : *bookmarks)
+            s << b->toString();
+    else
+        s << "Actualmente no hay bookamrks.\n";
+    return s.str();
 }
 
 void Navegador::serializarNavegador(std::ofstream& archivo) {

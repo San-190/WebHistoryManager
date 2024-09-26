@@ -4,9 +4,9 @@ Configuracion::Configuracion(size_t lim, double t) : limite(lim), tiempo(t) {}
 
 Configuracion::~Configuracion(){}
 
-size_t Configuracion::getLimite() const { return limite; }
+size_t Configuracion::getLimite() { return limite; }
 
-double Configuracion::getTiempo() const { return tiempo; }
+double Configuracion::getTiempo() { return tiempo; }
 
 void Configuracion::setLimite(size_t lim) { limite = lim; }
 

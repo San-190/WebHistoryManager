@@ -16,12 +16,12 @@ public:
     Pestana();
     ~Pestana();
 
-    int getNumero() const;
-    void setNumero(int num) { id = num; }
+    int getNumero();
+    void setNumero(int);
     bool getIncognito();
     void setIncognito(bool);
-
-    void agregarSitio(const Sitio& sitio);
+    std::list<Sitio*>* getSitios();
+    void agregarSitio(Sitio& sitio);
     std::string mostrarPestana();
     Sitio* getSitioActual();
 

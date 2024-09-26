@@ -17,12 +17,14 @@ private:
 public:
     Navegador();
     Navegador(const Configuracion&);
+    void inicializarNavegador();
+    Navegador* navegadorFiltradoPorUrl(std::string buscado);
     ~Navegador();
     void eliminaTodo();
 
     void agregarPestana(Pestana& p);
     void agregarSitioAPestana(Sitio&);
-    void agregarSitio(const Sitio& p);
+    void agregarSitio(Sitio& p);
     void agregarQuitarBookmark();
     bool agregarTag(std::string&);
     bool quitarTag(std::string&);
@@ -41,6 +43,8 @@ public:
     void desactivarModoIncognito();
     Sitio* getSitioActual();
     Pestana* getPestanaActual();
+
+    std::string mostrarBookmarks();
 
     void serializarNavegador(std::ofstream&);
     void deserializarNavegador(std::ifstream&);

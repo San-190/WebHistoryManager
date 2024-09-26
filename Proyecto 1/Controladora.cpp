@@ -29,12 +29,13 @@ void Controladora::principalControl0() {
 void Controladora::principalControl1() { Interfaz::irASitioWeb(*navegador); }
 void Controladora::principalControl2() { sitiosControl0(); }
 void Controladora::principalControl3() { Interfaz::crearNuevaPestana(*navegador); }
-void Controladora::principalControl4() {}
+void Controladora::principalControl4() { busquedaYFiltrosControl0(); }
 void Controladora::principalControl5() { Interfaz::cambiarModoIncognito(*navegador); }
 void Controladora::principalControl6() { archivosControl0(); }
 void Controladora::principalControl7() {}
 void Controladora::principalControl8() { Interfaz::mostrarMensajeFinal(); }
 int Controladora::controlSubmenuSitio() { return Interfaz::submenuSitio(*navegador); }
+
 
 void Controladora::sitiosControl0() {
 	int op;
@@ -52,7 +53,7 @@ void Controladora::sitiosControl0() {
 void Controladora::sitiosControl1() { Interfaz::agregarMarcador(*navegador); }
 void Controladora::sitiosControl2() { Interfaz::agregarTag(*navegador); }
 void Controladora::sitiosControl3() { Interfaz::quitarTag(*navegador); }
-int Controladora::controlSubMenuArhivos(){ return Interfaz::menuArchivos(); }
+int Controladora::controlSubMenuArhivos() { return Interfaz::submenuArchivos(); }
 void Controladora::archivosControl0() {
 	int op;
 	do {
@@ -67,3 +68,42 @@ void Controladora::archivosControl0() {
 }
 void Controladora::archivosControl1() { Interfaz::serializar(*navegador); }
 void Controladora::archivosControl2() { Interfaz::deserializar(*navegador); }
+int Controladora::controlSubMenuBusquedaYFiltros() { return Interfaz::submenuBusquedaYFiltros(); }
+
+void Controladora::busquedaYFiltrosControl0() {
+	int op;
+	do {
+		op = controlSubMenuBusquedaYFiltros();
+		switch (op) {
+		case 1: busquedaYFiltrosControl1(); break;
+		case 2: busquedaYFiltrosControl2(); break;
+		case 3: busquedaYFiltrosControl3(); break;
+		case 4: busquedaYFiltrosControl4(); break;
+		case 5: busquedaYFiltrosControl5(); break;
+		case 6: busquedaYFiltrosControl6(); break;
+		case 7: busquedaYFiltrosControl7(); break;
+		case 8: busquedaYFiltrosControl8(); break;
+		case 9: busquedaYFiltrosControl9(); break;
+		case 10: break;
+		default: controlInvalido();
+		}
+	} while (op > 10 || op < 1);
+}
+
+void Controladora::busquedaYFiltrosControl1() {}
+
+void Controladora::busquedaYFiltrosControl2() {}
+
+void Controladora::busquedaYFiltrosControl3() {}
+
+void Controladora::busquedaYFiltrosControl4() { Interfaz::verBookmarks(*navegador); }
+
+void Controladora::busquedaYFiltrosControl5() { Interfaz::filtrarPorUrl(*navegador); }
+
+void Controladora::busquedaYFiltrosControl6() {}
+
+void Controladora::busquedaYFiltrosControl7() {}
+
+void Controladora::busquedaYFiltrosControl8() {}
+
+void Controladora::busquedaYFiltrosControl9() {}
