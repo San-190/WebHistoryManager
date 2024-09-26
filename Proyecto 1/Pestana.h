@@ -1,15 +1,15 @@
 #pragma once
 #include<list>
-#include<fstream>
 #include"Sitio.h"
+#include"Configuracion.h"
+#include "Limitador.h"
 
 class Pestana {
 private:
     bool incognito;
     int id;
-    std::list<Sitio*>* sitios;
-    std::list<Sitio*>::const_iterator iterador;
-
+    std::list<Limitador*>* sitios;
+    std::list<Limitador*>::const_iterator iterador;
 public:
     static int numero;
 
@@ -20,8 +20,9 @@ public:
     void setNumero(int);
     bool getIncognito();
     void setIncognito(bool);
-    std::list<Sitio*>* getSitios();
-    void agregarSitio(Sitio& sitio);
+    std::list<Limitador*>* getSitios();
+    void agregarSitio(Limitador&);
+    void actualizaTamano(size_t);
     std::string mostrarPestana();
     Sitio* getSitioActual();
 
@@ -29,4 +30,5 @@ public:
     bool moverSitioSiguiente();
 
     void serializarPestana(std::ofstream&);
+    void quitarSitiosExpirados();
 };

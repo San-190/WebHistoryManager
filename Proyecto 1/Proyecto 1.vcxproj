@@ -133,6 +133,7 @@
     <ClInclude Include="ExcCadVacia.h" />
     <ClInclude Include="ExcValor.h" />
     <ClInclude Include="Interfaz.h" />
+    <ClInclude Include="Limitador.h" />
     <ClInclude Include="Navegador.h" />
     <ClInclude Include="Pestana.h" />
     <ClInclude Include="Sitio.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="ExcCadVacia.cpp" />
     <ClCompile Include="ExcValor.cpp" />
     <ClCompile Include="Interfaz.cpp" />
+    <ClCompile Include="Limitador.cpp" />
     <ClCompile Include="Navegador.cpp" />
     <ClCompile Include="Pestana.cpp" />
     <ClCompile Include="Sitio.cpp" />

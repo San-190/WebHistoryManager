@@ -1,22 +1,27 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 class Configuracion {
 private:
     size_t limite;
-    double tiempo;
+    std::chrono::seconds tiempo;
+    static Configuracion* instancia;
 
+    Configuracion(size_t, std::chrono::seconds);
+    static void destruirSingleton();
 public:
-    Configuracion(size_t = 0, double = 0.0);
     ~Configuracion();
+    static Configuracion* getInstancia();
 
     size_t getLimite();
-    double getTiempo();
+    std::chrono::seconds getTiempo();
 
     void setLimite(size_t);
-    void setTiempo(double);
+    void setTiempo(std::chrono::seconds);
 
     void serializarConfiguracion(std::ofstream&);
     void deserializarConfiguracion(std::ifstream&);
 };
+
