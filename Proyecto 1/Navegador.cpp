@@ -1,6 +1,6 @@
 #include "Navegador.h"
 
-Navegador::Navegador() : configuracion(new Configuracion(10, 600)) {
+Navegador::Navegador() : configuracion(Configuracion::getInstancia()) {
     privado = false;
     pestanas = new std::list<Pestana*>;
     sitios = new std::vector<Sitio*>;
@@ -29,11 +29,12 @@ Navegador* Navegador::navegadorFiltradoPorUrl(std::string buscado) {
         Pestana* pestana = new Pestana();
         pestana->setNumero(i++);
         for (auto s : *(p)->getSitios()) {
-            std::string url = s->getUrl();
+            Sitio* sitio = s->getSitio();
+            std::string url = sitio->getUrl();
             // find retorna la posición de la primera ocurrencia de la subcadena en la cadena.
             // npos es un valor especial que indica que la subcadena no fue encontrada.
             if (url.find(buscado) != std::string::npos) {
-                pestana->agregarSitio(*s);
+                pestana->agregarSitio(*new Limitador(*sitio));
                 bandera = true;
             }
         }
@@ -55,9 +56,10 @@ Navegador* Navegador::navegadorFiltradoPorTitulo(std::string buscado) {
         Pestana* pestana = new Pestana();
         pestana->setNumero(i++);
         for (auto s : *(p)->getSitios()) {
-            std::string titulo = s->getTitulo();
+            Sitio* sitio = s->getSitio();
+            std::string titulo = sitio->getTitulo();
             if (titulo.find(buscado) != std::string::npos) {
-                pestana->agregarSitio(*s);
+                pestana->agregarSitio(*new Limitador(*sitio));
                 bandera = true;
             }
         }
@@ -79,11 +81,12 @@ Navegador* Navegador::navegadorFiltradoPorTags(std::string buscado) {
         Pestana* pestana = new Pestana();
         pestana->setNumero(i++);
         for (auto s : *(p)->getSitios()) {
-            Bookmark* bookmark = s->getBookmark();
+            Sitio* sitio = s->getSitio();
+            Bookmark* bookmark = sitio->getBookmark();
             if (bookmark) {
                 for (auto t : *(bookmark)->getTags()) {
                     if ((*t).find(buscado) != std::string::npos) {
-                        pestana->agregarSitio(*s);
+                        pestana->agregarSitio(*new Limitador(*sitio));
                         bandera = true;
                     }
                 }
@@ -106,11 +109,13 @@ Navegador* Navegador::navegadorFiltradoPorBookmark() {
     for (auto p : *pestanas) {
         Pestana* pestana = new Pestana();
         pestana->setNumero(i++);
-        for (auto s : *(p)->getSitios())
-            if (s->getBookmark()) {
-                pestana->agregarSitio(*s);
+        for (auto s : *(p)->getSitios()) {
+            Sitio* sitio = s->getSitio();
+            if (sitio->getBookmark()) {
+                pestana->agregarSitio(*new Limitador(*sitio));
                 bandera = true;
             }
+        }
         if (bandera) {
             filtrado->agregarPestana(*pestana);
             bandera = false;
@@ -132,8 +137,6 @@ Navegador::~Navegador() {
         delete pestanas;
     if (bookmarks)
         delete bookmarks;
-    if (configuracion)
-        delete configuracion;
 }
 
 void Navegador::eliminaTodo() {
@@ -159,7 +162,7 @@ void Navegador::agregarPestana(Pestana& p) {
 }
 
 void Navegador::agregarSitioAPestana(Sitio& sitio) {
-    (*iterador)->agregarSitio(sitio);
+    (*iterador)->agregarSitio(*new Limitador(sitio));
 }
 
 void Navegador::agregarSitio(Sitio& p) {
@@ -342,8 +345,10 @@ std::string Navegador::toString() {
     std::stringstream s;
     for (auto p : *pestanas) {
         s << "\n---> Pestaña #" << p->getNumero() << '\n';
-        for (auto sit : *p->getSitios())
-            s << sit->toString();
+        for (auto sit : *p->getSitios()) {
+            Sitio* sitio = sit->getSitio();
+            s << sitio->toString();
+        }
     }
     return s.str();
 }
@@ -429,6 +434,9 @@ void Navegador::deserializarPestana(std::ifstream& archivo, int num) {
         archivo.read(reinterpret_cast<char*>(&can), sizeof(can));
 
         for (size_t i = 1; i <= can; ++i) {
+            std::chrono::time_point<std::chrono::steady_clock> tiempo;
+            archivo.read(reinterpret_cast<char*>(&tiempo), sizeof(tiempo));
+
             size_t caracteres;
             archivo.read(reinterpret_cast<char*>(&caracteres), sizeof(caracteres));
 
@@ -436,7 +444,9 @@ void Navegador::deserializarPestana(std::ifstream& archivo, int num) {
             archivo.read(&url[0], caracteres);
 
             Sitio* sitio = buscarSitio(url);
-            pestana->agregarSitio(*sitio);
+            Limitador* lim = new Limitador(*sitio);
+            lim->setTiempoInicio(tiempo);
+            pestana->agregarSitio(*lim);
         }
 
         pestanas->push_back(pestana);
