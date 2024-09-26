@@ -11,8 +11,8 @@ public:
     Configuracion(size_t = 0, double = 0.0);
     ~Configuracion();
 
-    size_t getLimite() const;
-    double getTiempo() const;
+    size_t getLimite();
+    double getTiempo();
 
     void setLimite(size_t);
     void setTiempo(double);

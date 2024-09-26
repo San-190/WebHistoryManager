@@ -25,6 +25,10 @@ public:
 	static void mostrarPagina(Navegador&);
 	static void mensajeFueraDeRango();
 	static void serializar(Navegador& nav);
-	static int menuArchivos();
+	static int submenuArchivos();
+	static int submenuBusquedaYFiltros();
 	static void deserializar(Navegador& nav);
+	static void verBookmarks(Navegador&);
+	static void filtrarPorUrl(Navegador& nav);
+	static int navegarFiltros(Navegador& nav);
 };

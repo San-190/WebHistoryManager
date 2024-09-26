@@ -13,30 +13,34 @@ Pestana::~Pestana() {
     delete sitios;
 }
 
-int Pestana::getNumero() const { return id; }
+int Pestana::getNumero() { return id; }
 
-bool Pestana::getIncognito(){
+void Pestana::setNumero(int num) { id = num; }
+
+bool Pestana::getIncognito() {
     return incognito;
 }
 
-void Pestana::setIncognito(bool in){
+void Pestana::setIncognito(bool in) {
     incognito = in;
 }
 
-void Pestana::agregarSitio(const Sitio& sitio) {
+std::list<Sitio*>* Pestana::getSitios() { return sitios; }
+
+void Pestana::agregarSitio(Sitio& sitio) {
     if (sitios->empty()) {
         sitios->push_back((Sitio*)&sitio);
         iterador = sitios->begin();
     }
     else {
-        if((*iterador)->getUrl() != sitio.getUrl()){
+        if ((*iterador)->getUrl() != sitio.getUrl()) {
             sitios->push_back((Sitio*)&sitio);
             iterador = --sitios->end();
         }
     }
 }
 
-std::string Pestana::mostrarPestana(){
+std::string Pestana::mostrarPestana() {
     std::stringstream s;
     s << "    Pestaña #" << id;
     if (incognito)
@@ -49,13 +53,13 @@ std::string Pestana::mostrarPestana(){
     return s.str();
 }
 
-Sitio* Pestana::getSitioActual(){
-    if(!sitios->empty())
+Sitio* Pestana::getSitioActual() {
+    if (!sitios->empty())
         return *iterador;
     return nullptr;
 }
 
-bool Pestana::moverSitioAnterior(){
+bool Pestana::moverSitioAnterior() {
     if (sitios->empty())
         return false;
     if (iterador != sitios->begin()) {
@@ -66,7 +70,7 @@ bool Pestana::moverSitioAnterior(){
         return false;
 }
 
-bool Pestana::moverSitioSiguiente(){
+bool Pestana::moverSitioSiguiente() {
     if (sitios->empty())
         return false;
 
@@ -74,13 +78,13 @@ bool Pestana::moverSitioSiguiente(){
     if (iterador != sitios->end()) {
         return true;
     }
-    else{
+    else {
         iterador--;
         return false;
     }
 }
 
-void Pestana::serializarPestana(std::ofstream& archivo){
+void Pestana::serializarPestana(std::ofstream& archivo) {
     archivo.write(reinterpret_cast<const char*>(&incognito), sizeof(incognito));
     archivo.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
@@ -91,6 +95,6 @@ void Pestana::serializarPestana(std::ofstream& archivo){
         std::string url = sitio->getUrl();
         tam = url.size();
         archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
-        archivo.write(url.c_str(), tam); 
+        archivo.write(url.c_str(), tam);
     }
 }
