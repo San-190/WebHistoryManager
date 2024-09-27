@@ -3,7 +3,7 @@
 Navegador::Navegador(){
     pestanas = new std::list<Pestana*>;
     sitios = nullptr;
-    bookmarks = new std::list<Sitio*>;
+    bookmarks = new std::vector<Sitio*>;
 }
 
 void Navegador::inicializarNavegador() {
@@ -29,7 +29,7 @@ Navegador* Navegador::navegadorFiltradoPorUrlTitulo(std::string buscado) {
             // find retorna la posición de la primera ocurrencia de la subcadena en la cadena.
             // npos es un valor especial que indica que la subcadena no fue encontrada.
             if (url.find(buscado) != std::string::npos || titulo.find(buscado) != std::string::npos) {
-                pestana->agregarSitio(*sitio);
+                pestana->agregarSitio(*sitio, s->getTiempoInicio());
                 bandera = true;
             }
         }
@@ -116,7 +116,11 @@ void Navegador::agregarQuitarBookmark() {
         }
         else {
             nuevo->quitarBookmark();
-            bookmarks->remove(nuevo);
+            for (auto i = bookmarks->begin(); i != bookmarks->end(); i++)
+                if (nuevo->getUrl() == (*i)->getUrl()) {
+                    bookmarks->erase(i);
+                    return;
+                }
         }
     }
 }

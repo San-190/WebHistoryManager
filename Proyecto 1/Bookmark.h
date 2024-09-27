@@ -11,7 +11,7 @@ public:
 	Bookmark();
 	virtual ~Bookmark();
 	std::vector<std::string*>* getTags();
-	bool existe(std::string &);
+	bool existe(std::string&);
 	bool agregarTag(std::string& tag);
 	bool eliminarTag(std::string& tag);
 	void serializarBookmark(std::ofstream&);
