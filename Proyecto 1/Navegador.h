@@ -1,14 +1,12 @@
 #pragma once
-#include<vector>
 #include<algorithm>
 #include"Pestana.h"
-#include"Configuracion.h"
 
 class Navegador {
 private:
     std::list<Pestana*>* pestanas;
     std::vector<Sitio*>* sitios;
-    std::list<Sitio*>* bookmarks;
+    std::vector<Sitio*>* bookmarks;
     std::list<Pestana*>::iterator iterador;
 
 public:

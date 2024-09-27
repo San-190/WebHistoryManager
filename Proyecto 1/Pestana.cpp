@@ -9,10 +9,10 @@ Pestana::Pestana() {
 }
 
 Pestana::~Pestana() {
+	numero--;
 	if (sitios) {
 		for (auto s : *sitios) {
 			delete s;
-			numero--;
 		}
 		delete sitios;
 	}
@@ -24,25 +24,31 @@ void Pestana::setId(int num) { id = num; }
 
 std::list<Limitador*>* Pestana::getSitios() { return sitios; }
 
-void Pestana::agregarSitio(Sitio& sitio) {
+void Pestana::agregarSitio(Sitio& sitio, std::chrono::time_point<std::chrono::steady_clock> exp) {
 	Configuracion* config = Configuracion::getInstancia();
-	if (config->getLimite() <= sitios->size()) {
-		auto primero = sitios->begin();
+	Limitador* nuevo = new Limitador(sitio);
+	if (exp != std::chrono::steady_clock::time_point())
+		nuevo->setTiempoInicio(exp);
+
+	if (config->getLimite() <= sitios->size()) {  // En caso de que el límite de sitios en la configuración sea superado
+		auto primero = sitios->begin();			 // Se elimina el primer sitio de la pestaña, y se agrega de último el nuevo
 		delete* primero;
 		sitios->erase(primero);
 		if(!sitios->empty())
 			iterador = --sitios->end();
 	}
 	if (sitios->empty()) {
-		sitios->push_back(new Limitador(sitio));
+		sitios->push_back(nuevo);
 		iterador = sitios->begin();
 	}
 	else {
 		Sitio* s = (*iterador)->getSitio();
 		if (s->getUrl() != sitio.getUrl()) {
-			sitios->push_back(new Limitador(sitio));
+			sitios->push_back(nuevo);
 			iterador = --sitios->end();
 		}
+		else
+			(*iterador)->setTiempoInicio(std::chrono::steady_clock::now()); // Si se intenta ingresar al últmio sitio que se visitó, se resetea su timer
 	}
 }
 
@@ -62,7 +68,7 @@ std::string Pestana::mostrarPestana() {
 	std::stringstream s;
 	s << "       Pestaña #" << id;
 	if (sitios->empty())
-		s << "\nBusque una página\n\n";
+		s << "\nNo hay sitios actualmente.\n\n";
 	else {
 		Sitio* sitio = (*iterador)->getSitio();
 		s << sitio->toString();

@@ -21,7 +21,7 @@ bool Bookmark::existe(std::string& tag){
     for (auto t : *tags) {
         if (*t == tag)
             return true;
-  }
+    }
     return false;
     
 }
