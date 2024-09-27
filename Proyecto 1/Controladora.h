@@ -19,6 +19,7 @@ public:
 	void principalControl6();
 	void principalControl7();
 	void principalControl8();
+
 	int controlSubmenuSitio();
 	void sitiosControl0();
 	void sitiosControl1();
@@ -36,8 +37,9 @@ public:
 	void busquedaYFiltrosControl2();
 	void busquedaYFiltrosControl3();
 	void busquedaYFiltrosControl4();
-	void busquedaYFiltrosControl5();
-	void busquedaYFiltrosControl6();
-	void busquedaYFiltrosControl7();
-	void busquedaYFiltrosControl8();
+
+	int controlSubMenuConfiguracion();
+	void configuracionControl0();
+	void configuracionControl1();
+	void configuracionControl2();
 };

@@ -24,4 +24,3 @@ public:
     void serializarConfiguracion(std::ofstream&);
     void deserializarConfiguracion(std::ifstream&);
 };
-

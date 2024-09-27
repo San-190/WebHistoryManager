@@ -6,22 +6,18 @@
 
 class Pestana {
 private:
-    bool incognito;
     int id;
     std::list<Limitador*>* sitios;
     std::list<Limitador*>::const_iterator iterador;
 public:
     static int numero;
-
     Pestana();
     ~Pestana();
 
-    int getNumero();
-    void setNumero(int);
-    bool getIncognito();
-    void setIncognito(bool);
+    int getId();
+    void setId(int);
     std::list<Limitador*>* getSitios();
-    void agregarSitio(Limitador&);
+    void agregarSitio(Sitio&);
     void actualizaTamano(size_t);
     std::string mostrarPestana();
     Sitio* getSitioActual();
@@ -30,5 +26,5 @@ public:
     bool moverSitioSiguiente();
 
     void serializarPestana(std::ofstream&);
-    void quitarSitiosExpirados();
+    bool quitarSitiosExpirados();
 };

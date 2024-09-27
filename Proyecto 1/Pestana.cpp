@@ -3,7 +3,6 @@
 int Pestana::numero = 1;
 
 Pestana::Pestana() {
-	incognito = false;
 	sitios = new std::list<Limitador*>;
 	iterador = sitios->begin();
 	id = numero++;
@@ -11,42 +10,37 @@ Pestana::Pestana() {
 
 Pestana::~Pestana() {
 	if (sitios) {
-		for (auto s : *sitios)
+		for (auto s : *sitios) {
 			delete s;
+			numero--;
+		}
 		delete sitios;
 	}
 }
 
-int Pestana::getNumero() { return id; }
+int Pestana::getId() { return id; }
 
-void Pestana::setNumero(int num) { id = num; }
-
-bool Pestana::getIncognito() {
-	return incognito;
-}
-
-void Pestana::setIncognito(bool in) {
-	incognito = in;
-}
+void Pestana::setId(int num) { id = num; }
 
 std::list<Limitador*>* Pestana::getSitios() { return sitios; }
 
-void Pestana::agregarSitio(Limitador& lim) {
+void Pestana::agregarSitio(Sitio& sitio) {
 	Configuracion* config = Configuracion::getInstancia();
 	if (config->getLimite() <= sitios->size()) {
 		auto primero = sitios->begin();
 		delete* primero;
 		sitios->erase(primero);
+		if(!sitios->empty())
+			iterador = --sitios->end();
 	}
 	if (sitios->empty()) {
-		sitios->push_back(&lim);
+		sitios->push_back(new Limitador(sitio));
 		iterador = sitios->begin();
 	}
 	else {
 		Sitio* s = (*iterador)->getSitio();
-		Sitio* n = lim.getSitio();
-		if (s->getUrl() != n->getUrl()) {
-			sitios->push_back(&lim);
+		if (s->getUrl() != sitio.getUrl()) {
+			sitios->push_back(new Limitador(sitio));
 			iterador = --sitios->end();
 		}
 	}
@@ -54,20 +48,19 @@ void Pestana::agregarSitio(Limitador& lim) {
 
 void Pestana::actualizaTamano(size_t tam) {
 	size_t t = sitios->size();
-	while (tam <= t) {
+	while (t > tam) {
 		auto primero = sitios->begin();
 		delete* primero;
 		sitios->erase(primero);
 		t--;
 	}
-	iterador = --sitios->end();
+	if(!sitios->empty())
+		iterador = --sitios->end();
 }
 
 std::string Pestana::mostrarPestana() {
 	std::stringstream s;
 	s << "       Pestaña #" << id;
-	if (incognito)
-		s << " (Incógnita)";
 	if (sitios->empty())
 		s << "\nBusque una página\n\n";
 	else {
@@ -108,16 +101,12 @@ bool Pestana::moverSitioSiguiente() {
 }
 
 void Pestana::serializarPestana(std::ofstream& archivo) {
-	archivo.write(reinterpret_cast<const char*>(&incognito), sizeof(incognito));
 	archivo.write(reinterpret_cast<const char*>(&id), sizeof(id));
 
 	size_t tam = sitios->size();
 	archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
 
 	for (const auto& s : *sitios) {
-		std::chrono::time_point<std::chrono::steady_clock> tiempo = s->getTiempoInicio();
-		archivo.write(reinterpret_cast<const char*>(&tiempo), sizeof(tiempo));
-
 		Sitio* sitio = s->getSitio();
 		std::string url = sitio->getUrl();
 		tam = url.size();
@@ -126,7 +115,8 @@ void Pestana::serializarPestana(std::ofstream& archivo) {
 	}
 }
 
-void Pestana::quitarSitiosExpirados() {
+bool Pestana::quitarSitiosExpirados() {
+	bool bandera = false;
 	auto actual = std::chrono::steady_clock::now();
 	Configuracion* config = Configuracion::getInstancia();
 	std::chrono::seconds tiempoFinal(config->getTiempo());
@@ -135,8 +125,19 @@ void Pestana::quitarSitiosExpirados() {
 		if (std::chrono::duration_cast<std::chrono::seconds>(actual - (*it)->getTiempoInicio()) >= tiempoFinal) {
 			delete* it;
 			it = sitios->erase(it);
+			bandera = true;
 		}
 		else
 			it++;
 	}
+	if(bandera && !sitios->empty())
+		iterador = --sitios->end();
+	return bandera;
 }
+
+/*
+Recursos utilizados
+
+Uso de std::chrono::duration_cast:
+https://en.cppreference.com/w/cpp/chrono/duration/duration_cast
+*/

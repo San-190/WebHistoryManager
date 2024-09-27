@@ -34,11 +34,11 @@ void Controladora::principalControl3() { Interfaz::crearNuevaPestana(*navegador)
 
 void Controladora::principalControl4() { busquedaYFiltrosControl0(); }
 
-void Controladora::principalControl5() { Interfaz::cambiarModoIncognito(*navegador); }
+void Controladora::principalControl5() { Interfaz::activarModoIncognito(*navegador); }
 
 void Controladora::principalControl6() { archivosControl0(); }
 
-void Controladora::principalControl7() {}
+void Controladora::principalControl7() { configuracionControl0(); }
 
 void Controladora::principalControl8() { Interfaz::mostrarMensajeFinal(); }
 
@@ -94,28 +94,34 @@ void Controladora::busquedaYFiltrosControl0() {
 			case 2: busquedaYFiltrosControl2(); break;
 			case 3: busquedaYFiltrosControl3(); break;
 			case 4: busquedaYFiltrosControl4(); break;
-			case 5: busquedaYFiltrosControl5(); break;
-			case 6: busquedaYFiltrosControl6(); break;
-			case 7: busquedaYFiltrosControl7(); break;
-			case 8: busquedaYFiltrosControl8(); break;
-			case 9: break;
+			case 5: break;
 			default: controlInvalido();
 		}
-	} while (op > 9 || op < 1);
+	} while (op > 5 || op < 1);
 }
 
-void Controladora::busquedaYFiltrosControl1() { Interfaz::buscarPorUrl(*navegador); }
+void Controladora::busquedaYFiltrosControl1() { Interfaz::buscarPorUrlTitulo(*navegador); }
 
-void Controladora::busquedaYFiltrosControl2() { Interfaz::buscarPorTitulo(*navegador); }
+void Controladora::busquedaYFiltrosControl2() { Interfaz::buscarPorBookmarks(*navegador); }
 
-void Controladora::busquedaYFiltrosControl3() { Interfaz::buscarPorTags(*navegador); }
+void Controladora::busquedaYFiltrosControl3() { Interfaz::filtrarPorUrlTitulo(*navegador); }
 
-void Controladora::busquedaYFiltrosControl4() { Interfaz::buscarPorBookmarks(*navegador); }
+void Controladora::busquedaYFiltrosControl4() { Interfaz::filtrarPorBookmarks(*navegador); }
 
-void Controladora::busquedaYFiltrosControl5() { Interfaz::filtrarPorUrl(*navegador); }
+int Controladora::controlSubMenuConfiguracion() { return Interfaz::submenuConfiguracion(); }
 
-void Controladora::busquedaYFiltrosControl6() { Interfaz::filtrarPorTitulo(*navegador); }
+void Controladora::configuracionControl0() {
+	int op;
+	do {
+		op = controlSubMenuConfiguracion();
+		switch (op) {
+			case 1: configuracionControl1(); break;
+			case 2: configuracionControl2(); break;
+			case 3: break;
+			default: controlInvalido();
+		}
+	} while (op > 4 || op < 1);
+}
+void Controladora::configuracionControl1() { Interfaz::cambiarLimiteEntradas(*navegador); }
 
-void Controladora::busquedaYFiltrosControl7() { Interfaz::filtrarPorTags(*navegador); }
-
-void Controladora::busquedaYFiltrosControl8() { Interfaz::filtrarPorBookmarks(*navegador); }
+void Controladora::configuracionControl2() { Interfaz::cambiarLimiteTiempo(*navegador); }

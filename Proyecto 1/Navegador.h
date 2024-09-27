@@ -6,23 +6,17 @@
 
 class Navegador {
 private:
-    bool privado;
     std::list<Pestana*>* pestanas;
     std::vector<Sitio*>* sitios;
     std::list<Sitio*>* bookmarks;
     std::list<Pestana*>::iterator iterador;
-    std::list<Pestana*>::iterator incognito;
-    Configuracion* configuracion;
 
 public:
     Navegador();
-    Navegador(const Configuracion&);
-    void inicializarNavegador();
-    Navegador* navegadorFiltradoPorUrl(std::string);
-    Navegador* navegadorFiltradoPorTitulo(std::string);
-    Navegador* navegadorFiltradoPorTags(std::string);
-    Navegador* navegadorFiltradoPorBookmark();
     ~Navegador();
+    void inicializarNavegador();
+    Navegador* navegadorFiltradoPorUrlTitulo(std::string);
+    Navegador* navegadorFiltradoPorBookmark();
     void eliminaTodo();
 
     void agregarPestana(Pestana& p);
@@ -41,11 +35,13 @@ public:
     bool moverSitioAnterior();
     bool moverSitioSiguiente();
 
-    void cambiarModoIncognito();
-    void activarModoIncognito();
-    void desactivarModoIncognito();
+    void setSitios(std::vector<Sitio*>*);
+    std::vector<Sitio*>* getSitios();
     Sitio* getSitioActual();
     Pestana* getPestanaActual();
+    void actualizarLimites(int);
+    bool verificaExpiraciones();
+    void verificaExpiracionesEnTodas();
 
     bool existenPestanas();
     std::string mostrarBookmarks();
@@ -56,6 +52,8 @@ public:
 
     // Estas deserializaciones se realizan aquí ya que se requiere 
     // buscar los sitios en la lista de sitios leída desde el .csv
-    void deserializarPestana(std::ifstream&, int);
+    void deserializarPestana(std::ifstream&);
     void deserializarBookmark(std::ifstream&, Bookmark&);
+
+
 };
