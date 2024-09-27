@@ -22,3 +22,10 @@ void Limitador::setSitio(Sitio& s){
 void Limitador::setTiempoInicio(std::chrono::time_point<std::chrono::steady_clock> t){
     tiempoInicio = t;
 }
+
+/*
+Recursos utilizados
+
+Uso de std::chrono::steady_clock para medir tiempo:
+https://en.cppreference.com/w/cpp/chrono/steady_clock
+*/

@@ -5,8 +5,8 @@ void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "1) Ir a sitio web\n";
 	std::cout << "2) Opciones del sitio\n";
 	std::cout << "3) Añadir nueva pestaña\n";
-	std::cout << "4) Búsqueda de sitios y filtros\n";
-	std::cout << "5) Activar/Desactivar Modo Incógnito\n";
+	std::cout << "4) Búsqueda y filtros\n";
+	std::cout << "5) Activar Modo Incógnito\n";
 	std::cout << "6) Importar/Exportar sesiones\n";
 	std::cout << "7) Configuración de políticas\n";
 	std::cout << "8) Salir\n\n";
@@ -33,6 +33,12 @@ int Interfaz::menuPrincipal(Navegador& nav) {
 	mostrarPagina(nav);
 	mostrarMenuPrincipal();
 	while (true) {
+		if (nav.verificaExpiraciones()) {
+			system("cls");
+			mostrarPagina(nav);
+			mostrarMenuPrincipal();
+		}
+
 		if (GetAsyncKeyState(VK_UP) & 0x8000) {
 			if (!nav.moverPestanaSiguiente()) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
@@ -104,25 +110,15 @@ int Interfaz::submenuSitio(Navegador& nav) {
 		system("pause");
 		return 4;
 	}
-	else {
-		Pestana* pestana = nav.getPestanaActual();
-		if (pestana->getIncognito()) {
-			std::cout << "\n\nNo puede editar un sitio desde una pestaña incógnita.\n\n";
-			system("pause");
-			return 4;
-		}
-		else {
-			system("cls");
-			mostrarSitio(nav);
-			std::cout << "--------- NAVEGAROAR ---------\n\n";
-			std::cout << "1) Agregar / Quitar bookmark\n";
-			std::cout << "2) Agregar Tag\n";
-			std::cout << "3) Eliminar Tag\n";
-			std::cout << "4) Volver\n\n";
-			std::cout << "Digite la opción: ";
-			return revisaInt();
-		}
-	}
+	system("cls");
+	mostrarSitio(nav);
+	std::cout << "--------- NAVEGAROAR ---------\n\n";
+	std::cout << "1) Agregar / Quitar bookmark\n";
+	std::cout << "2) Agregar Tag\n";
+	std::cout << "3) Eliminar Tag\n";
+	std::cout << "4) Volver\n\n";
+	std::cout << "Digite la opción: ";
+	return revisaInt();
 }
 
 Navegador* Interfaz::crearNavegador() {
@@ -170,8 +166,7 @@ void Interfaz::agregarTag(Navegador& nav) {
 	}
 }
 
-void Interfaz::quitarTag(Navegador& nav)
-{
+void Interfaz::quitarTag(Navegador& nav){
 	Sitio* s = nav.getSitioActual();
 	std::string tag;
 	if (s && s->getBookmark()) {
@@ -192,10 +187,91 @@ void Interfaz::crearNuevaPestana(Navegador& nav) {
 	nav.agregarPestana(*(new Pestana));
 }
 
-void Interfaz::cambiarModoIncognito(Navegador& nav) {
-	nav.cambiarModoIncognito();
+void Interfaz::activarModoIncognito(Navegador& nav) {
+	Navegador* incognito = new Navegador();
+	Configuracion* config = Configuracion::getInstancia();
+	size_t tamanio = config->getLimite();
+	std::chrono::seconds tiempo = config->getTiempo();
+	int numero = Pestana::numero;
+	Pestana::numero = 1;
+	incognito->inicializarNavegador();
+	incognito->setSitios(nav.getSitios());
+
+	config->setLimite(1);
+	config->setTiempo(std::chrono::seconds(999999999));
+
+	navegarIncognito(*incognito);
+	incognito->setSitios(nullptr);
+	delete incognito;
+
+	config->setLimite(tamanio);
+	config->setTiempo(tiempo);
+	Pestana::numero = numero;
 }
 
+void Interfaz::mostrarIncognito(Navegador& nav) {
+	system("cls");
+	std::cout << "--------Navegador Incógnito--------\n\n";
+	mostrarPagina(nav);
+	std::cout << "1) Ir a sitio web\n";
+	std::cout << "2) Añadir nueva pestaña\n";
+	std::cout << "\n---> Presione ESC para salir del modo incógnito\n\n";
+}
+
+void Interfaz::navegarIncognito(Navegador& nav) {
+	mostrarIncognito(nav);
+	while (true) {
+		if (GetAsyncKeyState(VK_UP) & 0x8000) {
+			if (!nav.moverPestanaSiguiente()) {
+				std::cout << "\nNo hay pestañas siguientes\n\n";
+				system("pause");
+			}
+			mostrarIncognito(nav);
+			Sleep(200);
+		}
+
+		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+			if (!nav.moverPestanaAnterior()) {
+				std::cout << "\nNo hay pestañas anteriores\n\n";
+				system("pause");
+			}
+			mostrarIncognito(nav);
+			Sleep(200);
+		}
+
+		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+			if (!nav.moverSitioAnterior()) {
+				std::cout << "\nNo hay sitios anteriores\n\n";
+				system("pause");
+			}
+			mostrarIncognito(nav);
+			Sleep(200);
+		}
+
+		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+			if (!nav.moverSitioSiguiente()) {
+				std::cout << "\nNo hay sitios siguientes\n\n";
+				system("pause");
+			}
+			mostrarIncognito(nav);
+			Sleep(200);
+		}
+		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
+
+		if (GetAsyncKeyState(0x31) & 0x8000) {
+			irASitioWeb(nav);
+			mostrarIncognito(nav);
+		}
+
+		if (GetAsyncKeyState(0x32) & 0x8000) {
+			crearNuevaPestana(nav);
+			mostrarIncognito(nav);
+		}
+
+		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+			return;
+	}
+}
 
 std::string Interfaz::revisarString() {
 	std::string texto;
@@ -282,15 +358,27 @@ int Interfaz::submenuArchivos() {
 int Interfaz::submenuBusquedaYFiltros() {
 	system("cls");
 	std::cout << "--------- NAVEGAROAR ---------\n\n";
-	std::cout << "1) Búsqueda por URL\n";
-	std::cout << "2) Búsqueda por título\n";
-	std::cout << "3) Búsqueda por tag\n";
-	std::cout << "4) Ver bookmarks\n";
-	std::cout << "5) Filtrar por URL\n";
-	std::cout << "6) Filtrar por título\n";
-	std::cout << "7) Filtrar por tag\n";
-	std::cout << "8) Filtrar por bookmarks\n";
-	std::cout << "9) Volver\n\n";
+	std::cout << "1) Búsqueda por URL/Título\n";
+	std::cout << "2) Búsqueda por bookmarks\n";
+	std::cout << "3) Filtrar por URL/Título\n";
+	std::cout << "4) Filtrar por bookmarks\n";
+	std::cout << "5) Volver\n\n";
+	std::cout << "Digite la opción: ";
+	return revisaInt();
+}
+
+int Interfaz::submenuConfiguracion(){
+	Configuracion* config = Configuracion::getInstancia();
+	system("cls");
+	std::cout << "--------- NAVEGAROAR ---------\n\n";
+	std::cout << "Configuración actual:\n";
+	std::cout << "Límite de entradas: " << config->getLimite() << '\n';
+	std::chrono::seconds segs = config->getTiempo();
+	std::cout << "Límite de tiempo: " << segs.count() << " segundos\n\n";
+
+	std::cout << "1) Cambiar límite de entradas \n";
+	std::cout << "2) Cambiar límite de tiempo\n";
+	std::cout << "3) Volver\n\n";
 	std::cout << "Digite la opción: ";
 	return revisaInt();
 }
@@ -322,29 +410,11 @@ void Interfaz::deserializar(Navegador& nav) {
 	}
 }
 
-void Interfaz::buscarPorUrl(Navegador& nav) {
-	std::string url;
-	std::cout << "\n\nEscriba el URL a buscar: ";
-	url = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorUrl(url);
-	mostrarSitiosEncontrados(*filtrado);
-	delete filtrado;
-}
-
-void Interfaz::buscarPorTitulo(Navegador& nav) {
-	std::string titulo;
-	std::cout << "\n\nEscriba el título a buscar: ";
-	titulo = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorTitulo(titulo);
-	mostrarSitiosEncontrados(*filtrado);
-	delete filtrado;
-}
-
-void Interfaz::buscarPorTags(Navegador& nav) {
-	std::string tag;
-	std::cout << "\n\nEscriba el tag a buscar: ";
-	tag = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorTags(tag);
+void Interfaz::buscarPorUrlTitulo(Navegador& nav) {
+	std::string entrada;
+	std::cout << "\n\nEscriba la entrada a buscar: ";
+	entrada = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorUrlTitulo(entrada);
 	mostrarSitiosEncontrados(*filtrado);
 	delete filtrado;
 }
@@ -355,39 +425,11 @@ void Interfaz::buscarPorBookmarks(Navegador& nav) {
 	delete filtrado;
 }
 
-void Interfaz::filtrarPorUrl(Navegador& nav) {
-	std::string url;
-	std::cout << "\n\nEscriba el filtro para los URLs: ";
-	url = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorUrl(url);
-	if (filtrado->existenPestanas())
-		navegarFiltros(*filtrado);
-	else {
-		std::cout << "\n---> No se encontraron coincidencias.\n\n";
-		system("pause");
-	}
-	delete filtrado;
-}
-
-void Interfaz::filtrarPorTitulo(Navegador& nav) {
-	std::string titulo;
-	std::cout << "\n\nEscriba el filtro para los títulos: ";
-	titulo = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorTitulo(titulo);
-	if (filtrado->existenPestanas())
-		navegarFiltros(*filtrado);
-	else {
-		std::cout << "\n---> No se encontraron coincidencias.\n\n";
-		system("pause");
-	}
-	delete filtrado;
-}
-
-void Interfaz::filtrarPorTags(Navegador& nav) {
-	std::string tag;
-	std::cout << "\n\nEscriba el filtro para los tags: ";
-	tag = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorTags(tag);
+void Interfaz::filtrarPorUrlTitulo(Navegador& nav) {
+	std::string filtro;
+	std::cout << "\n\nEscriba el filtro: ";
+	filtro = revisarString();
+	Navegador* filtrado = nav.navegadorFiltradoPorUrlTitulo(filtro);
 	if (filtrado->existenPestanas())
 		navegarFiltros(*filtrado);
 	else {
@@ -406,6 +448,31 @@ void Interfaz::filtrarPorBookmarks(Navegador& nav){
 		system("pause");
 	}
 	delete filtrado;
+}
+
+void Interfaz::cambiarLimiteEntradas(Navegador& nav) {
+	int lim;
+	std::cout << "\n\nEscriba el nuevo límite: ";
+	do {
+		lim = revisaInt();
+		if (lim < 1)
+			std::cout << "---> El límite debe ser mayor a 0.\n";
+	} while (lim < 1);
+	Configuracion* config = Configuracion::getInstancia();
+	config->setLimite(lim);
+	nav.actualizarLimites(lim);
+}
+
+void Interfaz::cambiarLimiteTiempo(Navegador& nav){
+	int lim;
+	std::cout << "\n\nEscriba el nuevo límite: ";
+	do {
+		lim = revisaInt();
+		if (lim < 1)
+			std::cout << "---> El límite debe ser mayor a 0.\n";
+	} while (lim < 1);
+	Configuracion* config = Configuracion::getInstancia();
+	config->setTiempo(std::chrono::seconds(lim));
 }
 
 void Interfaz::mostrarSitiosEncontrados(Navegador& nav) {
@@ -467,7 +534,7 @@ int Interfaz::navegarFiltros(Navegador& nav) {
 		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
 
 		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
-			return 9;
+			return 5;
 	}
 }
 
