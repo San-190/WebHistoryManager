@@ -11,9 +11,8 @@ Pestana::Pestana() {
 Pestana::~Pestana() {
 	numero--;
 	if (sitios) {
-		for (auto s : *sitios) {
+		for (auto s : *sitios)
 			delete s;
-		}
 		delete sitios;
 	}
 }
@@ -27,28 +26,31 @@ std::list<Limitador*>* Pestana::getSitios() { return sitios; }
 void Pestana::agregarSitio(Sitio& sitio, std::chrono::time_point<std::chrono::steady_clock> exp) {
 	Configuracion* config = Configuracion::getInstancia();
 	Limitador* nuevo = new Limitador(sitio);
-	if (exp != std::chrono::steady_clock::time_point())
+
+	// Si "exp" es diferente de 0, significa que se recibió un tiempo de inicio que debe setearse al Limitador
+	if (exp != std::chrono::steady_clock::time_point()) 
 		nuevo->setTiempoInicio(exp);
 
-	if (config->getLimite() <= sitios->size()) {  // En caso de que el límite de sitios en la configuración sea superado
-		auto primero = sitios->begin();			 // Se elimina el primer sitio de la pestaña, y se agrega de último el nuevo
+	if (config->getLimite() <= sitios->size()) {  // En caso de que el límite de sitios en la configuración sea superado,
+		auto primero = sitios->begin();			  // se elimina el primer sitio de la pestaña, y el nuevo es agregado al final
 		delete* primero;
 		sitios->erase(primero);
 		if(!sitios->empty())
 			iterador = --sitios->end();
 	}
-	if (sitios->empty()) {
+	if (sitios->empty()) { // Si no hay sitios, se agrega al inicio
 		sitios->push_back(nuevo);
 		iterador = sitios->begin();
 	}
 	else {
+		iterador = --sitios->end();
 		Sitio* s = (*iterador)->getSitio();
-		if (s->getUrl() != sitio.getUrl()) {
+		if (s->getUrl() != sitio.getUrl()) { // Si el Sitio a agregar no es igual al último buscado, se agrega
 			sitios->push_back(nuevo);
-			iterador = --sitios->end();
+			iterador++;
 		}
-		else
-			(*iterador)->setTiempoInicio(std::chrono::steady_clock::now()); // Si se intenta ingresar al últmio sitio que se visitó, se resetea su timer
+		else  // En caso contrario, si se intenta ingresar al últmio sitio que se visitó, solo se resetea su timer
+			(*iterador)->setTiempoInicio(std::chrono::steady_clock::now());
 	}
 }
 

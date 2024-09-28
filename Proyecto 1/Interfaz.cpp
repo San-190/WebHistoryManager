@@ -13,63 +13,70 @@ void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "Digite la opción: ";
 }
 
-int Interfaz::menuPrincipal(Navegador& nav) {
+int Interfaz::menuPrincipal(Historial& his) {
 	system("cls");
-	mostrarPagina(nav);
+	his.verificaExpiraciones();
+	mostrarPagina(his);
 	mostrarMenuPrincipal();
-	while (true) {
-		if (nav.verificaExpiraciones()) {
+
+	while (true) { // En este ciclo, se escuchan las teclas direccionales con el objetivo de Navegar
+		if (his.verificaExpiraciones()) {
 			system("cls");
-			mostrarPagina(nav);
+			mostrarPagina(his);
 			mostrarMenuPrincipal();
 		}
 
+		// Flecha de arriba
 		if (GetAsyncKeyState(VK_UP) & 0x8000) {
-			if (!nav.moverPestanaSiguiente()) {
+			if (!his.moverPestanaSiguiente()) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
 				system("pause");
 			}
 			system("cls");
-			mostrarPagina(nav);
+			mostrarPagina(his);
 			mostrarMenuPrincipal();
 			Sleep(200);
 		}
 
+		// Flecha de abajo
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-			if (!nav.moverPestanaAnterior()) {
+			if (!his.moverPestanaAnterior()) {
 				std::cout << "\nNo hay pestañas anteriores\n\n";
 				system("pause");
 			}
 			system("cls");
-			mostrarPagina(nav);
+			mostrarPagina(his);
 			mostrarMenuPrincipal();
 			Sleep(200);
 		}
 
+		// Flecha izquierda
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-			if (!nav.moverSitioAnterior()) {
+			if (!his.moverSitioAnterior()) {
 				std::cout << "\nNo hay sitios anteriores\n\n";
 				system("pause");
 			}
 			system("cls");
-			mostrarPagina(nav);
+			mostrarPagina(his);
 			mostrarMenuPrincipal();
 			Sleep(200);
 		}
 
+		// Flecha derecha
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-			if (!nav.moverSitioSiguiente()) {
+			if (!his.moverSitioSiguiente()) {
 				std::cout << "\nNo hay sitios siguientes\n\n";
 				system("pause");
 			}
 			system("cls");
-			mostrarPagina(nav);
+			mostrarPagina(his);
 			mostrarMenuPrincipal();
 			Sleep(200);
 		}
 
 		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
 
+		// Aquí se escuchan los números correspondientes a las opciones del menú
 		if (GetAsyncKeyState(0x31) & 0x8000)
 			return 1;
 		if (GetAsyncKeyState(0x32) & 0x8000)
@@ -93,14 +100,14 @@ void Interfaz::mostrarMensajeFinal() {
 	std::cout << "\n\nCerrando el TIGRESTORIAL\n\n";
 }
 
-int Interfaz::submenuSitio(Navegador& nav) {
-	if (!nav.getSitioActual()) {
+int Interfaz::submenuSitio(Historial& his) {
+	if (!his.getSitioActual()) {
 		std::cout << "\n\nDebe ingresar a un sitio para editar.\n\n";
 		system("pause");
 		return 4;
 	}
 	system("cls");
-	mostrarSitio(nav);
+	mostrarSitio(his);
 	std::cout << "--------- TIGRESTORIAL ---------\n\n";
 	std::cout << "1) Agregar / Quitar bookmark\n";
 	std::cout << "2) Agregar Tag\n";
@@ -139,6 +146,7 @@ int Interfaz::submenuConfiguracion() {
 	std::cout << "Configuración actual:\n";
 	std::cout << "Límite de entradas: " << config->getLimite() << '\n';
 	std::chrono::seconds segs = config->getTiempo();
+	// count permite imprimir los segundos como si fueran un entero
 	std::cout << "Límite de tiempo: " << segs.count() << " segundos\n\n";
 
 	std::cout << "1) Cambiar límite de entradas \n";
@@ -148,9 +156,9 @@ int Interfaz::submenuConfiguracion() {
 	return revisaInt();
 }
 
-Navegador* Interfaz::crearNavegador() {
-	Navegador* nav = new Navegador();
-	nav->inicializarNavegador();
+Historial* Interfaz::crearHistorial() {
+	Historial* nav = new Historial();
+	nav->inicializarHistorial();
 	std::ifstream archivo("Sitios Web.csv");
 	if (!archivo.fail()) {
 		nav->leerSitios(archivo);
@@ -159,21 +167,21 @@ Navegador* Interfaz::crearNavegador() {
 	return nav;
 }
 
-void Interfaz::irASitioWeb(Navegador& nav) {
+void Interfaz::irASitioWeb(Historial& his) {
 	std::string url;
 	std::cout << "\n\nEscriba el url de la página: ";
 	url = revisarString();
-	Sitio* sitio = nav.buscarSitio(url);
+	Sitio* sitio = his.buscarSitio(url);
 	if (sitio)
-		nav.agregarSitioAPestana(*sitio);
+		his.agregarSitioAPestana(*sitio);
 	else {
 		std::cout << "\n404 – Not Found\n\n";
 		system("pause");
 	}
 }
 
-void Interfaz::mostrarSitio(Navegador& nav) {
-	Sitio* sitio = nav.getSitioActual();
+void Interfaz::mostrarSitio(Historial& his) {
+	Sitio* sitio = his.getSitioActual();
 	Bookmark* book;
 	if (sitio) {
 		std::cout << "Estas en el sitio: " << sitio->getUrl() << '\n';
@@ -183,21 +191,21 @@ void Interfaz::mostrarSitio(Navegador& nav) {
 	}
 }
 
-void Interfaz::crearNuevaPestana(Navegador& nav) {
-	nav.agregarPestana(*(new Pestana));
+void Interfaz::crearNuevaPestana(Historial& his) {
+	his.agregarPestana(*(new Pestana));
 }
 
-void Interfaz::agregarMarcador(Navegador& nav) {
-	nav.agregarQuitarBookmark();
+void Interfaz::agregarMarcador(Historial& his) {
+	his.agregarQuitarBookmark();
 }
 
-void Interfaz::agregarTag(Navegador& nav) {
-	Sitio* s = nav.getSitioActual();
+void Interfaz::agregarTag(Historial& his) {
+	Sitio* s = his.getSitioActual();
 	std::string tag;
 	if (s && s->getBookmark()) {
 		std::cout << "Ingrese el tag: ";
 		tag = revisarString();
-		if (!nav.agregarTag(tag)) {
+		if (!his.agregarTag(tag)) {
 			std::cout << "El tag ya existe\n\n";
 			system("pause");
 		}
@@ -208,13 +216,13 @@ void Interfaz::agregarTag(Navegador& nav) {
 	}
 }
 
-void Interfaz::quitarTag(Navegador& nav){
-	Sitio* s = nav.getSitioActual();
+void Interfaz::quitarTag(Historial& his){
+	Sitio* s = his.getSitioActual();
 	std::string tag;
 	if (s && s->getBookmark()) {
 		std::cout << "Ingrese el tag que desea eliminar: ";
 		tag = revisarString();
-		if (!nav.quitarTag(tag)) {
+		if (!his.quitarTag(tag)) {
 			std::cout << "El tag no existe\n\n";
 			system("pause");
 		}
@@ -225,85 +233,97 @@ void Interfaz::quitarTag(Navegador& nav){
 	}
 }
 
-void Interfaz::activarModoIncognito(Navegador& nav) {
-	Navegador* incognito = new Navegador(); // Se crea un navegador 'Auxiliar' para la navegación incógnita
+void Interfaz::activarModoIncognito(Historial& his) {
+	// Se crea un Historial auxiliar para la navegación incógnita
+	Historial* incognito = new Historial();
+
+	// Guardamos los valores actuales de la configuración, para setearlos de vuelta al terminar la navegación privada
 	Configuracion* config = Configuracion::getInstancia(); 
-	size_t tamanio = config->getLimite();			// Guardamos los valores actuales de la configuración
+	size_t tamanio = config->getLimite();			
 	std::chrono::seconds tiempo = config->getTiempo();
-	int numero = Pestana::numero;	// Se guarda el número de pestañas que habian en navegación normal
-	Pestana::numero = 1;  // Y se resetea el contador de pestañas para el nuevo navegador de incógnito
-	incognito->inicializarNavegador();		
-	incognito->setSitios(nav.getSitios());	// Al navegador le damos los sitios disponibles para la navegación
 
-	config->setLimite(1);		// Y se establecen las nuevas configuraciones para esta navegación 
-	config->setTiempo(std::chrono::seconds(999999999)); // (No hay pestañas anteriores, y el límite de tiempo es muy grande)
+	// Se guarda el número de pestañas que había en navegación normal, y se resetean para iniciar desde 1
+	int numero = Pestana::numero;
+	Pestana::numero = 1;
 
-	navegarIncognito(*incognito);  // Aquí puede navegar buscando sitios y creando nuevas pestañas incógnitas
-	incognito->setSitios(nullptr); // Cuando el usuario presiona 'ESC', se desvinculan los sitios disponibles del navegador Incógnito para su destrucción
+	// Al Historial le damos los sitios disponibles para la navegación
+	incognito->inicializarHistorial();		
+	incognito->setSitios(his.getSitios());
+
+	// Se establecen las nuevas configuraciones para esta navegación (solo se permite un Sitio por pestaña y el límite de tiempo es muy grande)
+	config->setLimite(1);		
+	config->setTiempo(std::chrono::seconds(999999999));
+
+	// Aquí comienza la navegación, buscando sitios y creando nuevas pestañas incógnitas
+	navegarIncognito(*incognito);
+
+	// Cuando el usuario presiona 'ESC', se desvinculan los sitios disponibles del Historial Incógnito para su destrucción
+	incognito->setSitios(nullptr);
 	delete incognito;
 
-	config->setLimite(tamanio); // Y por último se regresa la configuración que tenia el navegador original
-	config->setTiempo(tiempo);  // junto al número de pestañas para continuar con la navegación normal
+	// Finalmente, se vuelven a setear los valores de la configuración y número de pestañas de la navegación normal
+	config->setLimite(tamanio);
+	config->setTiempo(tiempo);
 	Pestana::numero = numero;
 }
 
-void Interfaz::mostrarIncognito(Navegador& nav) {
+void Interfaz::mostrarIncognito(Historial& his) {
 	system("cls");
-	std::cout << "--------Navegador Incógnito--------\n\n";
-	mostrarPagina(nav);
+	std::cout << "--------Historial Incógnito--------\n\n";
+	mostrarPagina(his);
 	std::cout << "1) Ir a sitio web\n";
 	std::cout << "2) Añadir nueva pestaña\n";
 	std::cout << "\n---> Presione ESC para salir del modo incógnito\n\n";
 }
 
-void Interfaz::navegarIncognito(Navegador& nav) {
-	mostrarIncognito(nav);
+void Interfaz::navegarIncognito(Historial& his) {
+	mostrarIncognito(his);
 	while (true) {
 		if (GetAsyncKeyState(VK_UP) & 0x8000) {
-			if (!nav.moverPestanaSiguiente()) {
+			if (!his.moverPestanaSiguiente()) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
 				system("pause");
 			}
-			mostrarIncognito(nav);
+			mostrarIncognito(his);
 			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-			if (!nav.moverPestanaAnterior()) {
+			if (!his.moverPestanaAnterior()) {
 				std::cout << "\nNo hay pestañas anteriores\n\n";
 				system("pause");
 			}
-			mostrarIncognito(nav);
+			mostrarIncognito(his);
 			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-			if (!nav.moverSitioAnterior()) {
+			if (!his.moverSitioAnterior()) {
 				std::cout << "\nNo hay sitios anteriores\n\n";
 				system("pause");
 			}
-			mostrarIncognito(nav);
+			mostrarIncognito(his);
 			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-			if (!nav.moverSitioSiguiente()) {
+			if (!his.moverSitioSiguiente()) {
 				std::cout << "\nNo hay sitios siguientes\n\n";
 				system("pause");
 			}
-			mostrarIncognito(nav);
+			mostrarIncognito(his);
 			Sleep(200);
 		}
 		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
 
 		if (GetAsyncKeyState(0x31) & 0x8000) {
-			irASitioWeb(nav);
-			mostrarIncognito(nav);
+			irASitioWeb(his);
+			mostrarIncognito(his);
 		}
 
 		if (GetAsyncKeyState(0x32) & 0x8000) {
-			crearNuevaPestana(nav);
-			mostrarIncognito(nav);
+			crearNuevaPestana(his);
+			mostrarIncognito(his);
 		}
 
 		if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
@@ -311,26 +331,26 @@ void Interfaz::navegarIncognito(Navegador& nav) {
 	}
 }
 
-void Interfaz::buscarPorUrlTitulo(Navegador& nav) {
+void Interfaz::buscarPorUrlTitulo(Historial& his) {
 	std::string entrada;
 	std::cout << "\n\nEscriba la entrada a buscar: ";
 	entrada = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorUrlTitulo(entrada);
+	Historial* filtrado = his.historialFiltradoPorUrlTitulo(entrada);
 	mostrarSitiosEncontrados(*filtrado);
 	delete filtrado;
 }
 
-void Interfaz::buscarPorBookmarks(Navegador& nav) {
-	Navegador* filtrado = nav.navegadorFiltradoPorBookmark();
+void Interfaz::buscarPorBookmarks(Historial& his) {
+	Historial* filtrado = his.historialFiltradoPorBookmark();
 	mostrarSitiosEncontrados(*filtrado);
 	delete filtrado;
 }
 
-void Interfaz::filtrarPorUrlTitulo(Navegador& nav) {
+void Interfaz::filtrarPorUrlTitulo(Historial& his) {
 	std::string filtro;
 	std::cout << "\n\nEscriba el filtro: ";
 	filtro = revisarString();
-	Navegador* filtrado = nav.navegadorFiltradoPorUrlTitulo(filtro);
+	Historial* filtrado = his.historialFiltradoPorUrlTitulo(filtro);
 	if (filtrado->existenPestanas())
 		navegarFiltros(*filtrado);
 	else {
@@ -340,8 +360,8 @@ void Interfaz::filtrarPorUrlTitulo(Navegador& nav) {
 	delete filtrado;
 }
 
-void Interfaz::filtrarPorBookmarks(Navegador& nav) {
-	Navegador* filtrado = nav.navegadorFiltradoPorBookmark();
+void Interfaz::filtrarPorBookmarks(Historial& his) {
+	Historial* filtrado = his.historialFiltradoPorBookmark();
 	if (filtrado->existenPestanas())
 		navegarFiltros(*filtrado);
 	else {
@@ -351,66 +371,66 @@ void Interfaz::filtrarPorBookmarks(Navegador& nav) {
 	delete filtrado;
 }
 
-void Interfaz::mostrarSitiosEncontrados(Navegador& nav) {
+void Interfaz::mostrarSitiosEncontrados(Historial& his) {
 	system("cls");
 	std::cout << "-----Coincidencias Encontradas-----\n";
-	if (nav.existenPestanas())
-		std::cout << nav.toString() << '\n';
+	if (his.existenPestanas())
+		std::cout << his.toString() << '\n';
 	else
 		std::cout << "---> No se encontraron coincidencias.\n\n";
 	system("pause");
 }
 
-void Interfaz::mostrarSitiosFiltrados(Navegador& nav) {
+void Interfaz::mostrarSitiosFiltrados(Historial& his) {
 	system("cls");
 	std::cout << "--------TIGRESTORIAL Filtrado--------\n\n";
-	mostrarPagina(nav);
+	mostrarPagina(his);
 	std::cout << "\n---> Utilice las flechas para moverse entre pestañas y sitios\n";
 	std::cout << "---> Presione ESC para quitar el filtro\n\n";
 }
 
-void Interfaz::navegarFiltros(Navegador& nav) {
-	mostrarSitiosFiltrados(nav);
+void Interfaz::navegarFiltros(Historial& his) {
+	mostrarSitiosFiltrados(his);
 	while (true) {
 
-		if (nav.verificaExpiraciones()) {
+		if (his.verificaExpiraciones()) {
 			system("cls");
-			mostrarSitiosFiltrados(nav);
+			mostrarSitiosFiltrados(his);
 		}
 		
 		if (GetAsyncKeyState(VK_UP) & 0x8000) {
-			if (!nav.moverPestanaSiguiente()) {
+			if (!his.moverPestanaSiguiente()) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
 				system("pause");
 			}
-			mostrarSitiosFiltrados(nav);
+			mostrarSitiosFiltrados(his);
 			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
-			if (!nav.moverPestanaAnterior()) {
+			if (!his.moverPestanaAnterior()) {
 				std::cout << "\nNo hay pestañas anteriores\n\n";
 				system("pause");
 			}
-			mostrarSitiosFiltrados(nav);
+			mostrarSitiosFiltrados(his);
 			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-			if (!nav.moverSitioAnterior()) {
+			if (!his.moverSitioAnterior()) {
 				std::cout << "\nNo hay sitios anteriores\n\n";
 				system("pause");
 			}
-			mostrarSitiosFiltrados(nav);
+			mostrarSitiosFiltrados(his);
 			Sleep(200);
 		}
 
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
-			if (!nav.moverSitioSiguiente()) {
+			if (!his.moverSitioSiguiente()) {
 				std::cout << "\nNo hay sitios siguientes\n\n";
 				system("pause");
 			}
-			mostrarSitiosFiltrados(nav);
+			mostrarSitiosFiltrados(his);
 			Sleep(200);
 		}
 		Sleep(100); // Retraso para evitar múltiples entradas rápidas 
@@ -420,7 +440,7 @@ void Interfaz::navegarFiltros(Navegador& nav) {
 	}
 }
 
-void Interfaz::cambiarLimiteEntradas(Navegador& nav) {
+void Interfaz::cambiarLimiteEntradas(Historial& his) {
 	int lim;
 	std::cout << "\n\nEscriba el nuevo límite: ";
 	do {
@@ -430,10 +450,10 @@ void Interfaz::cambiarLimiteEntradas(Navegador& nav) {
 	} while (lim < 1);
 	Configuracion* config = Configuracion::getInstancia();
 	config->setLimite(lim);
-	nav.actualizarLimites(lim);
+	his.actualizarLimites(lim); // Se actualizan los límites de entrada de cada pestaña
 }
 
-void Interfaz::cambiarLimiteTiempo(Navegador& nav) {
+void Interfaz::cambiarLimiteTiempo(Historial& his) {
 	int lim;
 	std::cout << "\n\nEscriba el nuevo límite: ";
 	do {
@@ -445,7 +465,7 @@ void Interfaz::cambiarLimiteTiempo(Navegador& nav) {
 	config->setTiempo(std::chrono::seconds(lim));
 }
 
-void Interfaz::serializar(Navegador& nav) {
+void Interfaz::serializar(Historial& his) {
 	std::cout << "Ingrese el nombre de la sesión a guardar (sin extensión): ";
 	std::string nombre = revisarString();
 	std::ofstream archivo(nombre + ".dat", std::ios::binary);
@@ -453,14 +473,14 @@ void Interfaz::serializar(Navegador& nav) {
 	if (archivo.fail())
 		std::cout << "No se puede abrir el archivo\n\n";
 	else {
-		nav.serializarNavegador(archivo);
+		his.serializarHistorial(archivo);
 		archivo.close();
 		std::cout << "Sesión " << nombre << " guardada correctamente.\n\n";
 		system("pause");
 	}
 }
 
-void Interfaz::deserializar(Navegador& nav) {
+void Interfaz::deserializar(Historial& his) {
 	int i = 0;
 	std::cout << "¿Seguro que desea cambiar de sesión? Se perderá la sesión actual.\n";
 	std::cout << "Digite (1) para confirmar o (2) para cancelar.\n";
@@ -480,25 +500,26 @@ void Interfaz::deserializar(Navegador& nav) {
 			system("pause");
 		}
 		else {
-			nav.deserializarNavegador(archivo);
+			his.deserializarHistorial(archivo);
 			archivo.close();
 			std::cout << "Sesión cargada correctamente.\n\n";
 		}
 	}
 }
-std::string Interfaz::revisarString() {
+std::string Interfaz::revisarString() { // Revisa que la cadena ingresada por el usuario sea válida
 	std::string texto;
 	bool valido = false;
 
-	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE)); // Esta funcion limpia el buffer para que cualquier caracter
-	// que haya sido escrito no se muestre al digitar una opcion valida en la navegacion.
+	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
+	// Esta funcion limpia el buffer para que cualquier caracter que haya 
+	// sido escrito no se muestre al digitar una opcion valida en la navegación.
+
 	while (!valido) {
 		try {
 			std::getline(std::cin, texto);
 			// Usamos std::all_of para comprobar si todos los caracteres son espacios
-			if (texto.empty() || std::all_of(texto.begin(), texto.end(), isspace)) {
+			if (texto.empty() || std::all_of(texto.begin(), texto.end(), isspace))
 				throw ExcCadVacia();
-			}
 			valido = true;
 		}
 		catch (const ExcCadVacia& e) {
@@ -511,13 +532,14 @@ std::string Interfaz::revisarString() {
 	return texto;
 }
 
-int Interfaz::revisaInt() {
+int Interfaz::revisaInt() {  // Revisa que el número ingresado por el usuario sea válido
 	int num;
 	bool valido = false;
 	FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 
 	while (!valido) {
 		try {
+			// Verifica que la entrada sea válida (un número entero sin caracteres)
 			if (std::cin >> num && std::cin.peek() == '\n') {
 				valido = true;
 				std::cin.clear();
@@ -538,13 +560,15 @@ int Interfaz::revisaInt() {
 	return num;
 }
 
-void Interfaz::mostrarPagina(Navegador& nav) {
-	std::cout << nav.mostrarPestana();
+void Interfaz::mostrarPagina(Historial& his) {
+	std::cout << his.mostrarPestana();
 }
+
 void Interfaz::mensajeFueraDeRango() {
 	std::cout << "\nLa opción digitada está fuera de rango\n\n";
 	system("pause");
 }
+
 /*
 Recursos utilizados
 
@@ -554,10 +578,12 @@ https://www.tutorialspoint.com/isspace-function-in-cplusplus
 Definición de all_off:
 https://en.cppreference.com/w/cpp/algorithm/all_any_none_of
 
-Función para detectar entradas del teclado en tiempo real.
+Función para detectar entradas del teclado en tiempo real:
 https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getasynckeystate#example
 
- Documentación de AmiBroker sobre GetAsyncKeyState (Codigos de teclas virtuales)
+Documentación de AmiBroker sobre GetAsyncKeyState (Códigos de teclas virtuales):
 https://www.amibroker.com/guide/afl/getasynckeystate.html
 
+Uso de la función FlushConsoleInputBuffer
+https://learn.microsoft.com/en-us/windows/console/flushconsoleinputbuffer
 */

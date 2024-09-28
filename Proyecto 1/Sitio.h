@@ -26,8 +26,8 @@ public:
     bool quitarTag(std::string&);
 
     std::string toString();
-
     void quitarBookmark();
 
+    // Sobrecarga del operador "menor que" para comparar otros sitios en base a su URL
     bool operator<(const Sitio&) const;
 };

@@ -1,19 +1,19 @@
-#include "Navegador.h"
+#include "Historial.h"
 
-Navegador::Navegador(){
+Historial::Historial(){
     pestanas = new std::list<Pestana*>;
-    sitios = nullptr;
+    sitios = nullptr; // Este vector se inicializa al leer los Sitios desde el .csv
     bookmarks = new std::vector<Sitio*>;
 }
 
-void Navegador::inicializarNavegador() {
-    pestanas->push_back(new Pestana());
+void Historial::inicializarHistorial() {
+    pestanas->push_back(new Pestana()); // Siempre habrá como mínimo una Pestaña abierta
     iterador = pestanas->begin();
 }
 
-Navegador* Navegador::navegadorFiltradoPorUrlTitulo(std::string buscado) {
-    verificaExpiracionesEnTodas();
-    Navegador* filtrado = new Navegador();
+Historial* Historial::historialFiltradoPorUrlTitulo(std::string buscado) {
+    verificaExpiracionesEnTodas(); // Elimina los Sitios que hayan cumplido sus tiempos de expiración
+    Historial* filtrado = new Historial();
     Sitio* sitio = nullptr;
     std::string url = "", titulo = "";
     bool bandera = false;
@@ -22,6 +22,7 @@ Navegador* Navegador::navegadorFiltradoPorUrlTitulo(std::string buscado) {
     for (auto p : *pestanas) {
         Pestana* pestana = new Pestana();
         pestana->setId(i++);
+
         for (auto s : *(p)->getSitios()) {
             sitio = s->getSitio();
             url = sitio->getUrl();
@@ -33,7 +34,7 @@ Navegador* Navegador::navegadorFiltradoPorUrlTitulo(std::string buscado) {
                 bandera = true;
             }
         }
-        if (bandera) {
+        if (bandera) { // Si en la Pestaña había un Sitio con coincidencias, se agrega al Historial filtrado
             filtrado->agregarPestana(*pestana);
             bandera = false;
         }
@@ -43,13 +44,15 @@ Navegador* Navegador::navegadorFiltradoPorUrlTitulo(std::string buscado) {
     return filtrado;
 }
 
-Navegador* Navegador::navegadorFiltradoPorBookmark() {
-    Navegador* filtrado = new Navegador();
+Historial* Historial::historialFiltradoPorBookmark() {
+    Historial* filtrado = new Historial();
     bool bandera = false;
     int i = 1;
+
     for (auto p : *pestanas) {
         Pestana* pestana = new Pestana();
         pestana->setId(i++);
+
         for (auto s : *(p)->getSitios()) {
             Sitio* sitio = s->getSitio();
             if (sitio->getBookmark()) {
@@ -67,8 +70,8 @@ Navegador* Navegador::navegadorFiltradoPorBookmark() {
     return filtrado;
 }
 
-Navegador::~Navegador() {
-    eliminaTodo();
+Historial::~Historial() {
+    reiniciar();
     if (sitios) {
         for (auto p : *sitios)
             delete p;
@@ -80,11 +83,10 @@ Navegador::~Navegador() {
         delete bookmarks;
 }
 
-void Navegador::eliminaTodo() {
+void Historial::reiniciar() {
     if (pestanas) {
-        for (auto p : *pestanas) {
+        for (auto p : *pestanas)
             delete p;
-        }
         pestanas->clear();
     }
     if (bookmarks) {
@@ -94,83 +96,90 @@ void Navegador::eliminaTodo() {
     }
 }
 
-void Navegador::agregarPestana(Pestana& p) {
+void Historial::agregarPestana(Pestana& p) {
     pestanas->push_back((Pestana*)&p);
     iterador = --pestanas->end();
 }
 
-void Navegador::agregarSitioAPestana(Sitio& sitio) {
+void Historial::agregarSitioAPestana(Sitio& sitio) {
     (*iterador)->agregarSitio(sitio);
 }
 
-void Navegador::agregarSitio(Sitio& p) {
+void Historial::agregarSitio(Sitio& p) {
     sitios->push_back((Sitio*)&p);
 }
 
-void Navegador::agregarQuitarBookmark() {
+void Historial::agregarQuitarBookmark() {
     Sitio* nuevo = getSitioActual();
     if (nuevo) {
-        if (!nuevo->getBookmark()) {
+        if (!nuevo->getBookmark()) { // Si el Sitio actual, no tiene Bookmark, se le agrega
             nuevo->setBookmark(*(new Bookmark()));
             bookmarks->push_back(nuevo);
         }
         else {
-            nuevo->quitarBookmark();
-            for (auto i = bookmarks->begin(); i != bookmarks->end(); i++)
-                if (nuevo->getUrl() == (*i)->getUrl()) {
-                    bookmarks->erase(i);
+            nuevo->quitarBookmark(); // Sí tenía Bookmark, se lo quitamos y lo eliminamos del contenedor
+            for (auto it = bookmarks->begin(); it != bookmarks->end(); it++)
+                if (nuevo->getUrl() == (*it)->getUrl()) {
+                    bookmarks->erase(it);
                     return;
                 }
         }
     }
 }
 
-bool Navegador::agregarTag(std::string& s) {
+bool Historial::agregarTag(std::string& s) {
     Sitio* sitio = getSitioActual();
     return sitio->agregarTag(s);
 }
 
-bool Navegador::quitarTag(std::string& s)
-{
+bool Historial::quitarTag(std::string& s){
     Sitio* sitio = getSitioActual();
     return sitio->quitarTag(s);
 }
 
-Sitio* Navegador::buscarSitio(std::string url) {
-    Sitio* sitio = new Sitio();
+Sitio* Historial::buscarSitio(std::string url) {
+    Sitio* sitio = new Sitio(); // Sitio auxiliar para realizar la búsqueda comparando por URL
     sitio->setUrl(url);
 
+    // lower_bound busca al primer elemento mayor o igual al buscado (estando la lista ordenada)
+    // Como cuarto parámetro, se recibe un lambda, que es una función de comparación personalizada.
     auto it = std::lower_bound(sitios->begin(), sitios->end(), sitio, [](const Sitio* a, const Sitio* b) {
         return *a < *b;
-        });
+    });
 
     delete sitio;
 
-    if (it != sitios->end() && (*it)->getUrl() == url) {
+    // Sí el iterador no fue más allá del final de la colección y tiene el URL buscado, se retorna el Sitio
+    if (it != sitios->end() && (*it)->getUrl() == url)
         return *it;
-    }
     return nullptr;
 }
 
-void Navegador::leerSitios(std::ifstream& archivo) {
-    sitios = new std::vector<Sitio*>;
+void Historial::leerSitios(std::ifstream& archivo) {
+    if(!sitios)
+        sitios = new std::vector<Sitio*>;
+
+    // La lectura se realiza por medio de búfferes de 2048 bytes
     const size_t tam = 2048;
     char buffer[tam];
+
     std::string url = "", dominio = "", titulo = "", atributo = "";
 
+    // gcount devuelve la cantidad de caracteres leídos
     while (archivo.read(buffer, tam) || archivo.gcount() > 0) {
         size_t bytes = archivo.gcount();
+        // Se recorren los caracteres leídos en búsqueda de comas o saltos de línea
         for (size_t i = 0; i < bytes; ++i) {
             char c = buffer[i];
 
-            if (c == ',') {
+            if (c == ',') { // Sí se encuentra una coma, significa que tenemos un atributo completo para asignar
                 if (url == "")
                     url = atributo;
                 else
                     dominio = atributo;
                 atributo = "";
             }
-            else if (c == '\n') {
+            else if (c == '\n') { // Al encontrar un salto de línea, se termina de leer el sitio y se agrega al vector
                 titulo = atributo;
                 sitios->push_back(new Sitio(url, dominio, titulo));
                 url = "";
@@ -182,20 +191,20 @@ void Navegador::leerSitios(std::ifstream& archivo) {
                 atributo += c;
         }
     }
+    // Una vez terminada la lectura, se ordenan los sitios para poder utilizar correctamente lower_bound
     std::sort(sitios->begin(), sitios->end(), [](const Sitio* a, const Sitio* b) {
         return *a < *b;
-        });
+    });
 }
 
-std::string Navegador::mostrarPestana() {
+std::string Historial::mostrarPestana() {
     std::string s = "";
-    if (*iterador != nullptr) {
+    if (*iterador != nullptr)
         return s + (*iterador)->mostrarPestana();
-    }
     return "No hay pestañas\n";
 }
 
-bool Navegador::moverPestanaAnterior() {
+bool Historial::moverPestanaAnterior() {
     if (pestanas->empty())
         return false;
 
@@ -207,7 +216,7 @@ bool Navegador::moverPestanaAnterior() {
         return false;
 }
 
-bool Navegador::moverPestanaSiguiente() {
+bool Historial::moverPestanaSiguiente() {
     if (pestanas->empty())
         return false;
 
@@ -220,62 +229,52 @@ bool Navegador::moverPestanaSiguiente() {
     }
 }
 
-bool Navegador::moverSitioAnterior() {
+bool Historial::moverSitioAnterior() {
     return (*iterador)->moverSitioAnterior();
 }
 
-bool Navegador::moverSitioSiguiente() {
+bool Historial::moverSitioSiguiente() {
     return (*iterador)->moverSitioSiguiente();
 }
 
-void Navegador::setSitios(std::vector<Sitio*>* sit){
+void Historial::setSitios(std::vector<Sitio*>* sit){
     sitios = sit;
 }
 
-std::vector<Sitio*>* Navegador::getSitios() {
+std::vector<Sitio*>* Historial::getSitios() {
     return sitios;
 }
 
-Sitio* Navegador::getSitioActual() {
+Sitio* Historial::getSitioActual() {
     return (*iterador)->getSitioActual();
 }
 
-Pestana* Navegador::getPestanaActual() {
+Pestana* Historial::getPestanaActual() {
     return (*iterador);
 }
 
-void Navegador::actualizarLimites(int lim){
+void Historial::actualizarLimites(int lim){
     for (auto p : *pestanas)
         p->actualizaTamano(lim);
 }
 
-bool Navegador::verificaExpiraciones(){
+bool Historial::verificaExpiraciones(){
     Pestana* p = getPestanaActual();
     return p->quitarSitiosExpirados();
 }
 
-void Navegador::verificaExpiracionesEnTodas(){
+void Historial::verificaExpiracionesEnTodas(){
     for (auto p : *pestanas)
         p->quitarSitiosExpirados();
 }
 
-bool Navegador::existenPestanas() {
+bool Historial::existenPestanas() {
     if (pestanas)
         return !pestanas->empty();
     return false;
 }
 
-std::string Navegador::mostrarBookmarks() {
-    std::stringstream s;
-    if (bookmarks && !bookmarks->empty())
-        for (auto b : *bookmarks)
-            s << b->toString();
-    else
-        s << "Actualmente no hay bookamrks.\n";
-    return s.str();
-}
-
-std::string Navegador::toString() {
+std::string Historial::toString() {
     std::stringstream s;
     for (auto p : *pestanas) {
         s << "\n---> Pestaña #" << p->getId() << '\n';
@@ -287,7 +286,8 @@ std::string Navegador::toString() {
     return s.str();
 }
 
-void Navegador::serializarNavegador(std::ofstream& archivo) {
+void Historial::serializarHistorial(std::ofstream& archivo) {
+    // Se serializa el tamaño de todos los contenedores para saber cuantas veces realizar la lectura corresspondiente
     size_t tam = pestanas->size();
     archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
 
@@ -296,7 +296,9 @@ void Navegador::serializarNavegador(std::ofstream& archivo) {
 
     tam = bookmarks->size();
     archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
+
     for (auto sitio : *bookmarks) {
+        // Como los Sitios ya están guardados en el archivo csv, aquí solo guardamos su URL y su Bookmark
         std::string url = sitio->getUrl();
         tam = url.size();
         archivo.write(reinterpret_cast<const char*>(&tam), sizeof(tam));
@@ -310,9 +312,9 @@ void Navegador::serializarNavegador(std::ofstream& archivo) {
     configuracion->serializarConfiguracion(archivo);
 }
 
-void Navegador::deserializarNavegador(std::ifstream& archivo) {
-    eliminaTodo();
-    deserializarPestana(archivo);
+void Historial::deserializarHistorial(std::ifstream& archivo) {
+    reiniciar(); // Se borran los elementos que existieran antes de cargar
+    deserializarPestanas(archivo);
 
     size_t tam;
     archivo.read(reinterpret_cast<char*>(&tam), sizeof(tam));
@@ -326,6 +328,7 @@ void Navegador::deserializarNavegador(std::ifstream& archivo) {
         // Se lee desde el primer caracter hasta el último
         archivo.read(&url[0], caracteres);
 
+        // Una vez leído el URL, se busca el Sitios en el vector de Sitios para agregarle el Bookmark
         Sitio* sitio = buscarSitio(url);
         bookmarks->push_back(sitio);
 
@@ -335,10 +338,11 @@ void Navegador::deserializarNavegador(std::ifstream& archivo) {
     }
     Configuracion* configuracion = Configuracion::getInstancia();
     configuracion->deserializarConfiguracion(archivo);
-    iterador = pestanas->begin();
+
+    iterador = pestanas->begin(); // Una vez terminada la lectura, se coloca el iterador en la primera Pestaña
 }
 
-void Navegador::deserializarPestana(std::ifstream& archivo) {
+void Historial::deserializarPestanas(std::ifstream& archivo) {
     size_t tam;
     archivo.read(reinterpret_cast<char*>(&tam), sizeof(tam));
 
@@ -368,7 +372,7 @@ void Navegador::deserializarPestana(std::ifstream& archivo) {
 }
 
 
-void Navegador::deserializarBookmark(std::ifstream& archivo, Bookmark& bookmark) {
+void Historial::deserializarBookmark(std::ifstream& archivo, Bookmark& bookmark) {
     size_t tam;
     archivo.read(reinterpret_cast<char*>(&tam), sizeof(tam));
 
