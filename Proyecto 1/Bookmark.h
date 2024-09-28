@@ -17,4 +17,3 @@ public:
 	void serializarBookmark(std::ofstream&);
 	std::string toString();
 };
-

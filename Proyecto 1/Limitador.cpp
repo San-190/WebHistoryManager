@@ -3,6 +3,7 @@
 Limitador::Limitador(Sitio& s) {
     sitio = (Sitio*)&s;
     tiempoInicio = std::chrono::steady_clock::now();
+    // Aquí se le asigna al Sitios su tiempo de ingreso
 }
 
 Limitador::~Limitador(){}

@@ -1,27 +1,21 @@
 #include "Bookmark.h"
 
-Bookmark::Bookmark(){
-    tags = new std::vector<std::string*>;
-}
+Bookmark::Bookmark(){ tags = new std::vector<std::string*>; }
 
 Bookmark::~Bookmark(){
     if (tags) {
-        for (auto p : *tags) {
+        for (auto p : *tags)
             delete p;
-        }
         delete tags;
     }
 }
 
-std::vector<std::string*>* Bookmark::getTags(){
-    return tags;
-}
+std::vector<std::string*>* Bookmark::getTags() { return tags; }
 
 bool Bookmark::existe(std::string& tag){
-    for (auto t : *tags) {
+    for (auto t : *tags)
         if (*t == tag)
             return true;
-    }
     return false;
     
 }
@@ -32,7 +26,6 @@ bool Bookmark::agregarTag(std::string& tag){
         return true;
     }
     return false;
-    
 }
 
 bool Bookmark::eliminarTag(std::string& tag){

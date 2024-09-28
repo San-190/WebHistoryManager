@@ -3,7 +3,7 @@
 
 class Controladora {
 private:
-	Navegador* navegador;
+	Historial* historial;
 public:
 	Controladora();
 	virtual ~Controladora();

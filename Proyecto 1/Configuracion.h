@@ -4,9 +4,9 @@
 
 class Configuracion {
 private:
-    size_t limite;
-    std::chrono::seconds tiempo;
-    static Configuracion* instancia;
+    size_t limite; // Límite de entradas
+    std::chrono::seconds tiempo; // Límite de tiempo
+    static Configuracion* instancia; // Instancia (esta clase es Singleton)
 
     Configuracion(size_t, std::chrono::seconds);
     static void destruirSingleton();

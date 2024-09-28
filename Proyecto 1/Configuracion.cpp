@@ -16,7 +16,7 @@ Configuracion::~Configuracion() {}
 Configuracion* Configuracion::getInstancia(){
     if (!instancia){
         instancia = new Configuracion(1000, std::chrono::seconds(3600));
-        atexit(&destruirSingleton);
+        atexit(&destruirSingleton); // Al terminar el programa, se destruye el Singleton
     }
     return instancia;
 }

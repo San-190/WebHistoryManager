@@ -2,20 +2,20 @@
 #include<algorithm>
 #include"Pestana.h"
 
-class Navegador {
+class Historial {
 private:
     std::list<Pestana*>* pestanas;
     std::vector<Sitio*>* sitios;
-    std::vector<Sitio*>* bookmarks;
+    std::vector<Sitio*>* bookmarks; // El vector de Bookmarks se utiliza para facilitar el proceso de serialización
     std::list<Pestana*>::iterator iterador;
 
 public:
-    Navegador();
-    ~Navegador();
-    void inicializarNavegador();
-    Navegador* navegadorFiltradoPorUrlTitulo(std::string);
-    Navegador* navegadorFiltradoPorBookmark();
-    void eliminaTodo();
+    Historial();
+    ~Historial();
+    void inicializarHistorial();
+    Historial* historialFiltradoPorUrlTitulo(std::string);
+    Historial* historialFiltradoPorBookmark();
+    void reiniciar();
 
     void agregarPestana(Pestana& p);
     void agregarSitioAPestana(Sitio&);
@@ -40,18 +40,13 @@ public:
     void actualizarLimites(int);
     bool verificaExpiraciones();
     void verificaExpiracionesEnTodas();
-
     bool existenPestanas();
-    std::string mostrarBookmarks();
     std::string toString();
 
-    void serializarNavegador(std::ofstream&);
-    void deserializarNavegador(std::ifstream&);
-
+    void serializarHistorial(std::ofstream&);
+    void deserializarHistorial(std::ifstream&);
     // Estas deserializaciones se realizan aquí ya que se requiere 
     // buscar los sitios en la lista de sitios leída desde el .csv
-    void deserializarPestana(std::ifstream&);
+    void deserializarPestanas(std::ifstream&);
     void deserializarBookmark(std::ifstream&, Bookmark&);
-
-
 };

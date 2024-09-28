@@ -24,7 +24,7 @@
     <ClInclude Include="Pestana.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="Navegador.h">
+    <ClInclude Include="Historial.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Interfaz.h">
@@ -56,7 +56,7 @@
     <ClCompile Include="Pestana.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="Navegador.cpp">
+    <ClCompile Include="Historial.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="Source.cpp">

@@ -16,7 +16,6 @@ std::string Sitio::getDominio() { return dominio; }
 
 Bookmark* Sitio::getBookmark() { return bookmark; }
 
-
 void Sitio::setUrl(std::string& u) { url = u; }
 
 void Sitio::setTitulo(std::string& t) { titulo = t; }
@@ -28,16 +27,14 @@ void Sitio::setBookmark(Bookmark& book) {
 }
 
 bool Sitio::agregarTag(std::string& s) {
-    if (bookmark) {
+    if (bookmark)
         return bookmark->agregarTag(s);
-    }
     return false;
 }
 
 bool Sitio::quitarTag(std::string& s) {
-    if (bookmark) {
+    if (bookmark)
         return bookmark->eliminarTag(s);
-    }
     return false;
 }
 
@@ -52,7 +49,8 @@ std::string Sitio::toString() {
 }
 
 void Sitio::quitarBookmark() {
-    delete bookmark;
+    if(bookmark)
+        delete bookmark;
     bookmark = nullptr;
 }
 
