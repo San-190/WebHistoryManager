@@ -38,7 +38,10 @@ public:
     std::vector<Sitio*>* getSitios();
     Sitio* getSitioActual();
     Pestana* getPestanaActual();
+
+    //Metodo solamente para unit testing
     std::list<Pestana*>* getPestanas();
+
     void actualizarLimites(int);
     bool verificaExpiraciones();
     void verificaExpiracionesEnTodas();
