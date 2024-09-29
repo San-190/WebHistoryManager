@@ -13,13 +13,13 @@ public:
 	static int menuPrincipal(Historial&);
 	static void mostrarMensajeFinal();
 
-	// Submenus de la interfaz
+	// Submenús de la interfaz
 	static int submenuSitio(Historial&);
 	static int submenuArchivos();
 	static int submenuBusquedaYFiltros();
 	static int submenuConfiguracion();
 	
-	// Navegacion del historial
+	// Navegación del historial
 	static Historial* crearHistorial();
 	static void irASitioWeb(Historial&);
 	static void mostrarSitio(Historial&);
@@ -30,12 +30,12 @@ public:
 	static void agregarTag(Historial&);
 	static void quitarTag(Historial&);
 
-	// Modo Incognito
+	// Modo Incógnito
 	static void activarModoIncognito(Historial&);
 	static void mostrarIncognito(Historial&);
 	static void navegarIncognito(Historial&);
 
-	// Busqueda y filtros
+	// Búsqueda y filtros
 	static void buscarPorUrlTitulo(Historial&);
 	static void buscarPorBookmarks(Historial& nav);
 	static void filtrarPorUrlTitulo(Historial&);
@@ -44,11 +44,11 @@ public:
 	static void mostrarSitiosFiltrados(Historial&);
 	static void navegarFiltros(Historial&);
 		
-	// Manejo de limites
+	// Manejo de límites
 	static void cambiarLimiteEntradas(Historial&);
 	static void cambiarLimiteTiempo(Historial&);
 
-	// Serializacion y Deserializacion
+	// Serialización y Deserialización
 	static void serializar(Historial&);
 	static void deserializar(Historial&);
 
