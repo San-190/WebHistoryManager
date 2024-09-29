@@ -17,6 +17,9 @@ public:
     size_t getLimite();
     std::chrono::seconds getTiempo();
 
+    //Metodo para reestablecer la instancia, solamente se usa para el unit testing
+    static void liberarInstancia();
+
     void setLimite(size_t);
     void setTiempo(std::chrono::seconds);
 

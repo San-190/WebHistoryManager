@@ -25,6 +25,13 @@ size_t Configuracion::getLimite() { return limite; }
 
 std::chrono::seconds Configuracion::getTiempo() { return tiempo; }
 
+void Configuracion::liberarInstancia() {
+    if (instancia != nullptr) {
+        delete instancia;
+        instancia = nullptr;
+    }
+}
+
 void Configuracion::setLimite(size_t lim) { limite = lim; }
 
 void Configuracion::setTiempo(std::chrono::seconds t) { tiempo = t; }
