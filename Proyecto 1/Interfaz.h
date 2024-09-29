@@ -9,6 +9,7 @@ class Interfaz{
 public:
 	// Interfaz principal
 	static void mostrarMenuPrincipal();
+	static void actualizarMenuPrincipal(Historial&);
 	static int menuPrincipal(Historial&);
 	static void mostrarMensajeFinal();
 
