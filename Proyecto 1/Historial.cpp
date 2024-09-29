@@ -41,6 +41,7 @@ Historial* Historial::historialFiltradoPorUrlTitulo(std::string buscado) {
         else
             delete pestana;
     }
+    filtrado->moverPestanaInicial();
     return filtrado;
 }
 
@@ -67,6 +68,7 @@ Historial* Historial::historialFiltradoPorBookmark() {
         else
             delete pestana;
     }
+    filtrado->moverPestanaInicial();
     return filtrado;
 }
 
@@ -202,6 +204,11 @@ std::string Historial::mostrarPestana() {
     if (*iterador != nullptr)
         return s + (*iterador)->mostrarPestana();
     return "No hay pestañas\n";
+}
+
+void Historial::moverPestanaInicial(){
+    if (!pestanas->empty())
+        iterador = pestanas->begin();
 }
 
 bool Historial::moverPestanaAnterior() {

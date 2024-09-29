@@ -28,6 +28,7 @@ public:
     void leerSitios(std::ifstream&);
     std::string mostrarPestana();
 
+    void moverPestanaInicial();
     bool moverPestanaAnterior();
     bool moverPestanaSiguiente();
     bool moverSitioAnterior();
