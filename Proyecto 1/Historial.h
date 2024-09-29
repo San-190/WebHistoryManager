@@ -38,6 +38,7 @@ public:
     std::vector<Sitio*>* getSitios();
     Sitio* getSitioActual();
     Pestana* getPestanaActual();
+    std::list<Pestana*>* getPestanas();
     void actualizarLimites(int);
     bool verificaExpiraciones();
     void verificaExpiracionesEnTodas();
