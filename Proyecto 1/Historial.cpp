@@ -260,6 +260,11 @@ Pestana* Historial::getPestanaActual() {
     return (*iterador);
 }
 
+std::list<Pestana*>* Historial::getPestanas()
+{
+    return pestanas;
+}
+
 void Historial::actualizarLimites(int lim){
     for (auto p : *pestanas)
         p->actualizaTamano(lim);
