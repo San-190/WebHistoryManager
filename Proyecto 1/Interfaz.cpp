@@ -13,11 +13,15 @@ void Interfaz::mostrarMenuPrincipal() {
 	std::cout << "Digite la opción: ";
 }
 
-int Interfaz::menuPrincipal(Historial& his) {
+void Interfaz::actualizarMenuPrincipal(Historial& his){
 	system("cls");
 	his.verificaExpiraciones();
 	mostrarPagina(his);
 	mostrarMenuPrincipal();
+}
+
+int Interfaz::menuPrincipal(Historial& his) {
+	actualizarMenuPrincipal(his);
 
 	while (true) { // En este ciclo, se escuchan las teclas direccionales con el objetivo de Navegar
 		if (his.verificaExpiraciones()) {
@@ -32,9 +36,7 @@ int Interfaz::menuPrincipal(Historial& his) {
 				std::cout << "\nNo hay pestañas siguientes\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(his);
-			mostrarMenuPrincipal();
+			actualizarMenuPrincipal(his);
 			Sleep(200);
 		}
 
@@ -44,9 +46,7 @@ int Interfaz::menuPrincipal(Historial& his) {
 				std::cout << "\nNo hay pestañas anteriores\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(his);
-			mostrarMenuPrincipal();
+			actualizarMenuPrincipal(his);
 			Sleep(200);
 		}
 
@@ -56,9 +56,7 @@ int Interfaz::menuPrincipal(Historial& his) {
 				std::cout << "\nNo hay sitios anteriores\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(his);
-			mostrarMenuPrincipal();
+			actualizarMenuPrincipal(his);
 			Sleep(200);
 		}
 
@@ -68,9 +66,7 @@ int Interfaz::menuPrincipal(Historial& his) {
 				std::cout << "\nNo hay sitios siguientes\n\n";
 				system("pause");
 			}
-			system("cls");
-			mostrarPagina(his);
-			mostrarMenuPrincipal();
+			actualizarMenuPrincipal(his);
 			Sleep(200);
 		}
 
@@ -383,6 +379,7 @@ void Interfaz::mostrarSitiosEncontrados(Historial& his) {
 
 void Interfaz::mostrarSitiosFiltrados(Historial& his) {
 	system("cls");
+	his.verificaExpiraciones();
 	std::cout << "--------TIGRESTORIAL Filtrado--------\n\n";
 	mostrarPagina(his);
 	std::cout << "\n---> Utilice las flechas para moverse entre pestañas y sitios\n";
