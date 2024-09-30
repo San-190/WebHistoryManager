@@ -5,7 +5,7 @@
 	Fecha: 29-09-2024
 	Universidad Nacional de Costa Rica
 	Santiago Araya Espinoza (1-1903-0723)
-	Jarren Chaves Vizcaino (1-1870-0594)
+	Jarren Chaves Vizcaíno (1-1870-0594)
 	John Blanco Paniagua (1-19250623)
 
 	El objetivo del proyecto es implementar un administrador del historial de navegación de un navegador web.
