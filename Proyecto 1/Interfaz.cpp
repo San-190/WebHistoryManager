@@ -470,7 +470,7 @@ void Interfaz::cambiarLimiteTiempo(Historial& his) {
 void Interfaz::serializar(Historial& his) {
 	std::cout << "Ingrese el nombre de la sesión a guardar (sin extensión): ";
 	std::string nombre = revisarString();
-	std::ofstream archivo(nombre + ".dat", std::ios::binary);
+	std::ofstream archivo(nombre + ".bin", std::ios::binary);
 
 	if (archivo.fail())
 		std::cout << "No se puede abrir el archivo\n\n";
@@ -495,7 +495,7 @@ void Interfaz::deserializar(Historial& his) {
 	if (i == 1) {
 		std::cout << "Ingrese el nombre de la sesión a cargar (sin extensión): ";
 		std::string nombre = revisarString();
-		std::ifstream archivo(nombre + ".dat", std::ios::binary);
+		std::ifstream archivo(nombre + ".bin", std::ios::binary);
 
 		if (archivo.fail()) {
 			std::cout << "No se ha encontrado la sesión\n\n";
