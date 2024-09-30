@@ -153,14 +153,19 @@ int Interfaz::submenuConfiguracion() {
 }
 
 Historial* Interfaz::crearHistorial() {
-	Historial* nav = new Historial();
-	nav->inicializarHistorial();
+	Historial* his = nullptr;
 	std::ifstream archivo("Sitios Web.csv");
 	if (!archivo.fail()) {
-		nav->leerSitios(archivo);
+		his = new Historial();
+		his->inicializarHistorial();
+		his->leerSitios(archivo);
 		archivo.close();
 	}
-	return nav;
+	else {
+		std::cerr << "---> No se ha encontrado el archivo 'Sitios Web.csv' para cargar los sitios...\n\n";
+		exit(1); // Si el programa cierra con código 1, es que no se encon´tró el archivo csv con los Sitios
+	}
+	return his;
 }
 
 void Interfaz::irASitioWeb(Historial& his) {
